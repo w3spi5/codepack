@@ -52,4 +52,4 @@ This afternoon in January 2025, I'm using [claude](https://claude.ai/) and I hav
 
 ## Licence
 
-Ce projet est sous licence [MIT](LICENSE).
+This project is under licence [MIT](LICENSE).
