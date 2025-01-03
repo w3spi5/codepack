@@ -33,6 +33,31 @@ chmod +x x-tractor.sh
 ./x-tractor.sh <path/to/directory>
 ```
 
+## Demo
+
+Running x-tractor on its own directory:
+
+```bash
+./x-tractor.sh .
+```
+
+Output:
+```
+📁 x-tractor/
+├── 📄 LICENSE
+├── 📄 README.md
+├── 📄 x-tractor.sh
+└── 📁 .git/
+    ├── 📄 HEAD
+    ├── 📁 branches/
+    ├── 📁 hooks/
+    ├── 📁 refs/
+    └── 📄 config
+
+Generated: x-tractor_20250103_145623.txt
+File contents have been extracted to: x-tractor_20250103_145623.txt
+```
+
 ## Configuration
 
 x-tractor generates a timestamped file containing :
@@ -42,7 +67,7 @@ x-tractor generates a timestamped file containing :
 
 ## How was I inspired to create such a package ?
 
-This afternoon in January 2025, I'm using [claude](https://claude.ai/) and I have to continually open new chats because a message informs me that using the same chat window consumes more and more tokens, then in fact, between For us, it's true that coming back months later on a 3 km long chat is never very appreciable. And since you have to give Claude the context each time and the manual extraction is boring, that's it! I started coding a program in bash, Claude and o1 helped me fix the bugs and improve the program (even if Claude seems to be a level above), and the result is a project that I am proud of because that it meets my expectations exactly and it only took me 3 hours to create all of this. Enjoy and don’t hesitate to contribute!
+This afternoon in January 2025, I'm using [claude](https://claude.ai/) and I have to continually open new chats because a message informs me that using the same chat window consumes more and more tokens, then in fact, between For us, it's true that coming back months later on a 3 km long chat is never very appreciable. And since you have to give Claude the context each time and the manual extraction is boring, that's it! I started coding a program in bash, Claude and o1 helped me fix the bugs and improve the program (even if Claude seems to be a level above), and the result is a project that I am proud of because that it meets my expectations exactly and it only took me 3 hours to create all of this. Enjoy and don't hesitate to contribute!
 
 ## Contribution
 
