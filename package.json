@@ -1,0 +1,20 @@
+{
+  "name": "@w3spi5/x-tractor",
+  "version": "1.0.0",
+  "description": "CLI tool for folder structure and file content extraction",
+  "main": "x-tractor.sh",
+  "bin": {
+    "xtractor": "x-tractor.sh"
+  },
+  "files": [
+    "x-tractor.sh",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": "git://github.com/w3spi5/x-tractor.git",
+  "author": "w3spi5",
+  "license": "MIT"
+}
