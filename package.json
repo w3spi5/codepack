@@ -1,1 +1,20 @@
-ewogICJuYW1lIjogInh0cmFjdG9yIiwKICAidmVyc2lvbiI6ICIxLjAuMCIsCiAgImRlc2NyaXB0aW9uIjogIkNMSSB0b29sIGZvciBmb2xkZXIgc3RydWN0dXJlIGFuZCBmaWxlIGNvbnRlbnQgZXh0cmFjdGlvbiIsCiAgIm1haW4iOiAieC10cmFjdG9yLnNoIiwKICAiYmluIjogewogICAgInh0cmFjdG9yIjogIngtdHJhY3Rvci5zaCIKICB9LAogICJrZXl3b3JkcyI6IFsKICAgICJjbGkiLAogICAgImZpbGVzIiwKICAgICJkaXJlY3RvcmllcyIsCiAgICAiZXh0cmFjdGlvbiIsCiAgICAidHJlZSIKICBdLAogICJhdXRob3IiOiAidzNzcGk1IiwKICAibGljZW5zZSI6ICJNSVQiLAogICJyZXBvc2l0b3J5IjogewogICAgInR5cGUiOiAiZ2l0IiwKICAgICJ1cmwiOiAiZ2l0K2h0dHBzOi8vZ2l0aHViLmNvbS93M3NwaTUveC10cmFjdG9yLmdpdCIKICB9LAogICJidWdzIjogewogICAgInVybCI6ICJodHRwczovL2dpdGh1Yi5jb20vdzNzcGk1L3gtdHJhY3Rvci9pc3N1ZXMiCiAgfSwKICAiaG9tZXBhZ2UiOiAiaHR0cHM6Ly9naXRodWIuY29tL3czc3BpNS94LXRyYWN0b3IjcmVhZG1lIgp9
+{
+  "name": "@w3spi5/x-tractor",
+  "version": "1.0.0",
+  "description": "CLI tool for folder structure and file content extraction",
+  "main": "x-tractor.sh",
+  "bin": {
+    "xtractor": "x-tractor.sh"
+  },
+  "files": [
+    "x-tractor.sh",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": "git://github.com/w3spi5/x-tractor.git",
+  "author": "w3spi5",
+  "license": "MIT"
+}
