@@ -11,10 +11,10 @@
     "LICENSE",
     "README.md"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "repository": "git://github.com/w3spi5/x-tractor.git",
   "author": "w3spi5",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
 }
