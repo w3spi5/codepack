@@ -41,8 +41,12 @@ Running x-tractor on its own directory:
 ./x-tractor.sh .
 ```
 
-Terminal output:
+Terminal output of generated file content (cat ./xtracted_20250103_145623.txt):
 ```
++---------------------------------------------+
+          --- DIRECTORY STRUCTURE ---          
++---------------------------------------------+
+
 📁 x-tractor/
 ├── 📄 LICENSE
 ├── 📄 README.md
@@ -54,35 +58,26 @@ Terminal output:
     ├── 📁 refs/
     └── 📄 config
 
-🗂️  Generating folder structure...
-✅ Extraction complete: See the file ./xtracted_20250103_145623.txt
-```
++---------------------------------------------+
+             --- FILES CONTENT ---             
++---------------------------------------------+
 
-Generated file content (x-tractor_20250103_145623.txt):
-```
-=== DIRECTORY STRUCTURE ===
-📁 x-tractor/
-├── 📄 LICENSE
-├── 📄 README.md
-├── 📄 x-tractor.sh
-└── 📁 .git/
-    ├── 📄 HEAD
-    ├── 📁 branches/
-    ├── 📁 hooks/
-    ├── 📁 refs/
-    └── 📄 config
-
-=== FILE CONTENTS ===
-[LICENSE]
++-------------------
+# LICENSE
++--------------------
 MIT License
 ...
 
-[README.md]
++-------------------
+# README.md
++--------------------
 # > x-tractor
 CLI Tool for Folder Structure and File Content Extraction
 ...
 
-[x-tractor.sh]
++-------------------
+# x-tractor.sh
++--------------------
 #!/bin/bash
 # x-tractor - Tool for Folder Structure and File Content Extraction
 ...

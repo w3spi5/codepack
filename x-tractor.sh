@@ -87,12 +87,16 @@ generate_tree() {
 # Generate the folder structure and save it
 echo "🗂️  Generating folder structure..."
 {
-    echo "MAIN TREE"
-    echo "========="
+    echo "+---------------------------------------------+"
+    echo "          --- DIRECTORY STRUCTURE ---          "
+    echo "+---------------------------------------------+"
     echo
     echo "$(basename "$directory")/"
     generate_tree "$directory" ""
     echo
+    echo "+---------------------------------------------+"
+    echo "             --- FILES CONTENT ---             "
+    echo "+---------------------------------------------+"
 } > "$output_file"
 
 # Function to check if a path should be excluded
@@ -118,9 +122,9 @@ while IFS= read -r -d '' file; do
     if ! should_exclude "$file" && [ "$file" != "$output_file" ] && [[ ! $(basename "$file") =~ ^xtracted_.*\.txt$ ]]; then
         filename=$(basename "$file")
         {
-            echo -e "\n# -------------------"
+            echo -e "\n+-------------------"
             echo "# $filename"
-            echo -e "# -------------------\n"
+            echo -e "+--------------------\n"
             cat "$file"
             echo -e "\n"
         } >> "$output_file"
