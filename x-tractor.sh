@@ -4,7 +4,7 @@
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 1.6
+# Version: 1.7
 # Requirements: Bash shell, find command
 # Dependencies: None
 # ----------------------------------------------------------------------------
@@ -41,11 +41,16 @@ if [ ! -d "$directory" ]; then
     exit 1
 fi
 
-# Define directories to exclude from the scan
+# Define directories to exclude from the scan (always excluded)
 exclude_dirs=(
     ".git"
     "node_modules"
 )
+
+# Create a nice message about excluded directories
+excluded_dirs_msg=$(printf "'%s', " "${exclude_dirs[@]}")
+excluded_dirs_msg=${excluded_dirs_msg%, }  # Remove trailing comma and space
+echo "Automatically excluding directories: ${excluded_dirs_msg}"
 
 # Parse arguments for excluded/included extensions
 exclude_extensions=()
@@ -146,109 +151,7 @@ generate_tree() {
     local dirs=()
 
     # Read directory contents
-    while IFS= read -r -d 
-
-    # Process directories
-    local i=0
-    for path in "${dirs[@]}"; do
-        local name
-        name=$(basename "$path")
-        local skip_dir=0
-        for exdir in "${exclude_dirs[@]}"; do
-            if [[ "$name" == "$exdir" ]]; then
-                skip_dir=1
-                break
-            fi
-        done
-        if [[ $skip_dir -eq 1 ]]; then
-            continue
-        fi
-        local new_prefix="$prefix│   "
-        if [ $((i + 1)) -eq ${#dirs[@]} ] && [ ${#files[@]} -eq 0 ]; then
-            echo "${prefix}└── $name/"
-            new_prefix="$prefix    "
-        else
-            echo "${prefix}├── $name/"
-        fi
-        generate_tree "$path" "$new_prefix"
-        ((i++))
-    done
-
-    # Process files
-    local i=0
-    for path in "${files[@]}"; do
-        local name
-        name=$(basename "$path")
-        if [ $((i + 1)) -eq ${#files[@]} ]; then
-            echo "${prefix}└── $name"
-        else
-            echo "${prefix}├── $name"
-        fi
-        ((i++))
-    done
-}
-
-# Generate the folder structure and save it
-echo "🗂️  Generating folder structure..."
-{
-    echo "+---------------------------------------------+"
-    echo "          --- DIRECTORY STRUCTURE ---          "
-    echo "+---------------------------------------------+"
-    echo
-    echo "$(basename "$directory")/"
-    generate_tree "$directory" ""
-    echo
-    echo "+---------------------------------------------+"
-    echo "             --- FILES CONTENT ---             "
-    echo "+---------------------------------------------+"
-} > "$output_file"
-
-# Function to check if a path should be excluded
-should_exclude_dir() {
-    local path="$1"
-    for dir in "${exclude_dirs[@]}"; do
-        if [[ "$path" == *"/$dir"* || "$path" == *"/$dir/"* ]]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-# Generate find command with directory exclusions
-find_cmd="find \"$directory\""
-for dir in "${exclude_dirs[@]}"; do
-    find_cmd+=" -not -path \"*/$dir/*\""
-done
-find_cmd+=" -type f -print0"
-
-# Loop through files to extract content, ignoring excluded directories and extensions
-while IFS= read -r -d '' file; do
-    if ! should_exclude_dir "$file" && [ "$file" != "$output_file" ] && 
-       [[ ! $(basename "$file") =~ ^xtracted_.*\.txt$ ]] && 
-       should_process_file "$file"; then
-        filename=$(basename "$file")
-        {
-            echo -e "\n+-------------------"
-            echo "# $filename"
-            echo -e "+--------------------\n"
-            cat "$file"
-            echo -e "\n"
-        } >> "$output_file"
-    fi
-done < <(eval "$find_cmd")
-
-# Final confirmation
-echo "✅ Extraction complete: See the file $output_file"
-if $exclude_mode; then
-    echo "Files with extensions ${exclude_extensions[*]} were excluded from the output."
-elif $include_mode; then
-    echo "Only files with extensions ${include_extensions[*]} were included in the output."
-else
-    echo "All file types were included in the output."
-fi
-
-# End of script
-exit 0\0' path; do
+    while IFS= read -r -d '' path; do
         if [[ -d "$path" ]]; then
             dirs+=("$path")
         else
@@ -315,6 +218,8 @@ echo "🗂️  Generating folder structure..."
     echo "+---------------------------------------------+"
     echo "             --- FILES CONTENT ---             "
     echo "+---------------------------------------------+"
+    echo
+    echo "NOTE: Directories '.git' and 'node_modules' are automatically excluded from analysis."
 } > "$output_file"
 
 # Function to check if a path should be excluded
@@ -339,7 +244,7 @@ find_cmd+=" -type f -print0"
 while IFS= read -r -d '' file; do
     if ! should_exclude_dir "$file" && [ "$file" != "$output_file" ] && 
        [[ ! $(basename "$file") =~ ^xtracted_.*\.txt$ ]] && 
-       ! should_exclude_extension "$file"; then
+       should_process_file "$file"; then
         filename=$(basename "$file")
         {
             echo -e "\n+-------------------"
@@ -353,8 +258,10 @@ done < <(eval "$find_cmd")
 
 # Final confirmation
 echo "✅ Extraction complete: See the file $output_file"
-if [ ${#exclude_extensions[@]} -gt 0 ]; then
+if $exclude_mode; then
     echo "Files with extensions ${exclude_extensions[*]} were excluded from the output."
+elif $include_mode; then
+    echo "Only files with extensions ${include_extensions[*]} were included in the output."
 else
     echo "All file types were included in the output."
 fi
