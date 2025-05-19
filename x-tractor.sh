@@ -251,7 +251,8 @@ while IFS= read -r -d '' file; do
             echo -e "\n+-------------------"
             echo "# $filename"
             echo -e "+--------------------\n"
-            cat "$file"
+            # Filter out non-printable characters and replace � with a space
+            tr -d '\000-\011\013-\037\177' < "$file" | tr '�' ''
             echo -e "\n"
         } >> "$output_file"
     fi
