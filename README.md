@@ -1,12 +1,20 @@
-# > x-tractor<br>CLI Tool for Folder Structure and File Content Extraction
+# X-TRACTOR
 
-x-tractor is a powerful CLI tool designed to extract folder structures and file contents while offering the flexibility to exclude specific directories. It's an essential utility for developers, system administrators, and power users who need an efficient solution for file management and data extraction.
+<p align="center">
+  <img src="logo.webp" alt="x-tractor Logo" width="500"/>
+</p>
+
+CLI tool to extract folder structure and file contents with customizable extension filtering.
+
+It's an essential utility for developers, system administrators, and power users who need an efficient solution for file management and data extraction.
 
 ## Features
 
-- 📂 Generates comprehensive folder structures
-- 📄 Extracts file contents
-- 🚫 Easily excludes specified directories
+- 📂 Generate a complete directory structure overview
+- 📄 Extract the content of all files in a directory tree
+- 🚫 Exclude specific directories from scanning (e.g., .git, node_modules)
+- Filter files by extension with `--exclude` option
+- Include only specific file types with `--include` option
 - 🛠️ Lightweight and efficient, even for large datasets
 - 🎨 Produces aesthetically pleasing tree-like output
 - 🔄 Supports versioning of extracted data
@@ -30,65 +38,37 @@ chmod +x x-tractor.sh
 ## Usage
 
 ```bash
-./x-tractor.sh <path/to/directory>
+./x-tractor.sh <path/to/directory> [options]
 ```
 
-## Demo
+### Options
+- `--exclude <ext1> [<ext2> ...]` - Exclude files with specified extensions (optional)
+- `--include <ext1> [<ext2> ...]` - Include ONLY files with specified extensions (optional)
 
-Running x-tractor on its own directory:
+Note: You cannot use both `--include` and `--exclude` at the same time
 
+### Examples
 ```bash
-./x-tractor.sh .
+# Process all files in a directory
+./x-tractor.sh /home/user/project
+
+# Exclude PDF and JPG files
+./x-tractor.sh /home/user/project --exclude pdf jpg
+
+# Include only JavaScript, HTML and CSS files
+./x-tractor.sh /home/user/project --include js html css
 ```
 
-Terminal output of generated file content (cat ./xtracted_20250103_145623.txt):
-```
-+---------------------------------------------+
-          --- DIRECTORY STRUCTURE ---          
-+---------------------------------------------+
+## Output
+The script generates a single text timestamped file containing:
+1. A tree-like representation of the directory structure
+2. The content of all files (respecting the extension filters)
 
-📁 x-tractor/
-├── 📄 LICENSE
-├── 📄 README.md
-├── 📄 x-tractor.sh
-└── 📁 .git/
-    ├── 📄 HEAD
-    ├── 📁 branches/
-    ├── 📁 hooks/
-    ├── 📁 refs/
-    └── 📄 config
+Output file is saved in the target directory as `xtracted_YYYYMMDD_HHMMSS.txt`
 
-+---------------------------------------------+
-             --- FILES CONTENT ---             
-+---------------------------------------------+
-
-+-------------------
-# LICENSE
-+--------------------
-MIT License
-...
-
-+-------------------
-# README.md
-+--------------------
-# > x-tractor
-CLI Tool for Folder Structure and File Content Extraction
-...
-
-+-------------------
-# x-tractor.sh
-+--------------------
-#!/bin/bash
-# x-tractor - Tool for Folder Structure and File Content Extraction
-...
-```
-
-## Configuration
-
-x-tractor generates a timestamped file containing:
-
-1. A tree-like structure of the analyzed directory
-2. Contents of all non-excluded files
+## Requirements
+- Bash shell
+- find command
 
 ## How was I inspired to create such a package?
 
@@ -104,5 +84,7 @@ And since you have to give Claude the context each time and the manual extractio
 3. Submit a Pull Request
 
 ## License
-
 This project is under [MIT](LICENSE) license.
+
+## Author
+Ɛɔıs3 Solutions
