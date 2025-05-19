@@ -4,7 +4,7 @@
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 1.7
+# Version: 2.0
 # Requirements: Bash shell, find command
 # Dependencies: None
 # ----------------------------------------------------------------------------
@@ -45,6 +45,7 @@ fi
 exclude_dirs=(
     ".git"
     "node_modules"
+    "venv"
 )
 
 # Create a nice message about excluded directories
@@ -219,7 +220,7 @@ echo "🗂️  Generating folder structure..."
     echo "             --- FILES CONTENT ---             "
     echo "+---------------------------------------------+"
     echo
-    echo "NOTE: Directories '.git' and 'node_modules' are automatically excluded from analysis."
+    echo "NOTE: Directories '.git', 'node_modules', and 'venv' are automatically excluded from analysis."
 } > "$output_file"
 
 # Function to check if a path should be excluded

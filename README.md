@@ -12,7 +12,7 @@ It's an essential utility for developers, system administrators, and power users
 
 - 📂 Generate a complete directory structure overview
 - 📄 Extract the content of all files in a directory tree
-- 🚫 Automatically exclude specific directories from scanning (`.git`, `node_modules`)
+- 🚫 Automatically exclude specific directories from scanning (`.git`, `node_modules`, `venv`)
 - Filter files by extension with `--exclude` option
 - Include only specific file types with `--include` option
 - 🛠️ Lightweight and efficient, even for large datasets
