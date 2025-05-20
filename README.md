@@ -19,6 +19,33 @@ It's an essential utility for developers, system administrators, and power users
 - 🎨 Produces aesthetically pleasing tree-like output
 - 🔄 Supports versioning of extracted data
 
+## Functionality Checklist
+
+- [x] **Directory Structure Generation**
+  - [x] Tree-like visualization of folders and files
+  - [x] Proper indentation and branch lines
+  - [x] Marking of excluded directories and files
+  - [x] Non-recursive exploration of excluded directories
+
+- [x] **Content Extraction**
+  - [x] Multi-file content extraction in a single operation
+  - [x] Proper file content formatting with headers
+  - [x] Automatic character encoding fixes
+  - [x] Filtering of non-printable characters
+
+- [x] **Filtering Options**
+  - [x] Automatic exclusion of system directories (.git, node_modules, venv)
+  - [x] Automatic exclusion of sensitive files (.env)
+  - [x] Extension-based inclusion with `--include` option
+  - [x] Extension-based exclusion with `--exclude` option
+
+- [x] **User Experience**
+  - [x] Progress bar with percentage display
+  - [x] File counter with thousands separator
+  - [x] Formatted file size display (bytes, KB, MB)
+  - [x] Clear completion messages
+  - [x] Timestamped output files
+
 ## Use Cases
 
 - Project documentation
