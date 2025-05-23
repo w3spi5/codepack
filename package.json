@@ -1,6 +1,6 @@
 {
   "name": "@w3spi5/x-tractor",
-  "version": "1.0.0",
+  "version": "2.8.1",
   "description": "CLI tool for folder structure and file content extraction",
   "main": "x-tractor.sh",
   "bin": {

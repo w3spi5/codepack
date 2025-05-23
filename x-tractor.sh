@@ -4,7 +4,7 @@
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 2.0
+# Version: 2.8.1
 # Dependencies: None
 # ----------------------------------------------------------------------------
 # This script scans a specified directory, generates a structural overview,
