@@ -4,7 +4,7 @@
   <img src="logo.webp" alt="x-tractor Logo" width="500"/>
 </p>
 
-Ultra-aggressive CLI tool to extract folder structure and file contents with advanced minification for AI processing.
+Ultra-efficient CLI tool to extract folder structure and file contents with advanced minification for AI processing.
 
 It's an essential utility for developers, system administrators, and power users who need an efficient solution for file management, data extraction, and AI-ready code preparation.
 
@@ -27,59 +27,67 @@ It's an essential utility for developers, system administrators, and power users
 ## Functionality Checklist
 
 - ✅ **Directory Structure Generation**
-  - ✅ Tree-like visualization of folders and files
-  - ✅ Proper indentation and branch lines
-  - ✅ Marking of excluded directories and files
-  - ✅ Non-recursive exploration of excluded directories
+
+  - Tree-like visualization of folders and files
+  - Proper indentation and branch lines
+  - Marking of excluded directories and files
+  - Non-recursive exploration of excluded directories
 
 - ✅ **Content Extraction**
-  - ✅ Multi-file content extraction in a single operation
-  - ✅ Proper file content formatting with headers
-  - ✅ Automatic character encoding fixes
-  - ✅ Filtering of non-printable characters
-  - ✅ Intelligent empty file detection and skipping
+
+  - Multi-file content extraction in a single operation
+  - Proper file content formatting with headers
+  - Automatic character encoding fixes
+  - Filtering of non-printable characters
+  - Intelligent empty file detection and skipping
 
 - ✅ **Filtering Options**
-  - ✅ Automatic exclusion of system directories (`.git`, `node_modules`, `venv`, `__pycache__`, `.next`, `dist`, `build`)
-  - ✅ Automatic exclusion of sensitive files (`.env`, `.DS_Store`)
-  - ✅ Extension-based inclusion with `--include` option
-  - ✅ Extension-based exclusion with `--exclude` option
+
+  - Automatic exclusion of system directories (`.git`, `node_modules`, `venv`, `__pycache__`, `.next`, `dist`, `build`)
+  - Automatic exclusion of sensitive files (`.env`, `.DS_Store`)
+  - Extension-based inclusion with `--include` option
+  - Extension-based exclusion with `--exclude` option
 
 - ✅ **Ultra-Aggressive Content Optimization**
-  - ✅ Smart minification with `--minify` option (50-70% reduction)
-  - ✅ External minification tools integration (terser, pyminify, csso, etc.)
-  - ✅ Language-aware ultra-aggressive comment removal
-  - ✅ Advanced whitespace optimization
-  - ✅ Special file types support (`.gitignore`, `Dockerfile`, `YAML`, etc.)
-  - ✅ Python ultra-minification (removes excess spaces around operators)
-  - ✅ AI-optimized content formatting
+
+  - Smart minification with `--minify` option (50-70% reduction)
+  - External minification tools integration (terser, pyminify, csso, etc.)
+  - Language-aware ultra-aggressive comment removal
+  - Advanced whitespace optimization
+  - Special file types support (`.gitignore`, `Dockerfile`, `YAML`, etc.)
+  - Python ultra-minification (removes excess spaces around operators)
+  - AI-optimized content formatting
 
 - ✅ **Tool Management**
-  - ✅ `--install-minifiers` command for automatic tool installation
-  - ✅ `--minify-info` command to check available tools
-  - ✅ Intelligent fallback to bash minification
-  - ✅ External tool detection and configuration
+
+  - `--install-minifiers` command for automatic tool installation
+  - `--minify-info` command to check available tools
+  - Intelligent fallback to bash minification
+  - External tool detection and configuration
 
 - ✅ **Compression & Output**
-  - ✅ Gzip compression with `--compress` option
-  - ✅ File size reduction statistics
-  - ✅ Compression ratio reporting
-  - ✅ Processing statistics (files processed vs skipped)
+
+  - Gzip compression with `--compress` option
+  - File size reduction statistics
+  - Compression ratio reporting
+  - Processing statistics (files processed vs skipped)
 
 - ✅ **User Experience**
-  - ✅ Progress bar with percentage display
-  - ✅ File counter with thousands separator
-  - ✅ Formatted file size display (bytes, KB, MB)
-  - ✅ Clear completion messages
-  - ✅ Timestamped output files
-  - ✅ Detailed minification tool status reporting
+
+  - Progress bar with percentage display
+  - File counter with thousands separator
+  - Formatted file size display (bytes, KB, MB)
+  - Clear completion messages
+  - Timestamped output files
+  - Detailed minification tool status reporting
 
 - ✅ **Debugging & Troubleshooting**
-  - ✅ Debug mode with `--debug` option
-  - ✅ Detailed file processing information
-  - ✅ Content length tracking
-  - ✅ Minification process monitoring
-  - ✅ Smart debug output (only when requested)
+
+  - Debug mode with `--debug` option
+  - Detailed file processing information
+  - Content length tracking
+  - Minification process monitoring
+  - Smart debug output (only when requested)
 
 ## Use Cases
 
