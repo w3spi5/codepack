@@ -1,7 +1,7 @@
 # codepack v4.0
 
 <p align="center">
-  <img src="logo.png" alt="codepack Logo" width="200"/>
+  <img src="logo.png" alt="codepack Logo" height="250"/>
 </p>
 
 Ultra-efficient CLI tool to extract folder structure and file contents with advanced minification for AI processing.
