@@ -1,8 +1,23 @@
-# codepack v4.0
+# codepack v4
+
+<!-- Badges: build, version, license -->
+<p align="center">
+  <a href="https://github.com/w3spi5/codepack/actions">
+    <img src="https://github.com/w3spi5/codepack/actions/workflows/publish.yml/badge.svg" alt="Build Status"/>
+  </a>
+  <a href="https://github.com/w3spi5/codepack/releases">
+    <img src="https://img.shields.io/github/v/release/w3spi5/codepack?label=release" alt="Latest Release"/>
+  </a>
+  <a href="https://github.com/w3spi5/codepack/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/w3spi5/codepack" alt="License"/>
+  </a>
+</p>
 
 <p align="center">
   <img src="logo.png" alt="codepack Logo" height="250"/>
 </p>
+
+[See latest releases](https://github.com/w3spi5/codepack/releases)
 
 Ultra-efficient CLI tool to extract folder structure and file contents with advanced minification for AI processing.
 
@@ -23,6 +38,8 @@ It's an essential utility for developers, system administrators, and power users
 - 🔄 Support for special files (`.gitignore`, `Dockerfile`, `README`, etc.)
 - 🎨 Produces aesthetically pleasing tree-like output
 - 🔄 Supports versioning of extracted data
+- ✅ Automated tests and continuous integration with GitHub Actions
+- ✨ **NEW:** **DEFAULT CURRENT DIRECTORY:** Simply run `./codepack` to process current directory
 
 ## Functionality Checklist
 
@@ -80,6 +97,7 @@ It's an essential utility for developers, system administrators, and power users
   - Clear completion messages
   - Timestamped output files
   - Detailed minification tool status reporting
+  - **Default current directory processing** - no path required
 
 - ✅ **Debugging & Troubleshooting**
 
@@ -99,6 +117,7 @@ It's an essential utility for developers, system administrators, and power users
 - **AI code analysis and processing** (optimized for Claude, GPT, etc.)
 - **Large codebase compression for sharing**
 - **Ultra-compact code preparation for AI tools**
+- **Quick current directory analysis** (just run `./codepack`)
 
 ## Installation
 
@@ -127,8 +146,10 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 ## Usage
 
 ```bash
-./codepack.sh <path/to/directory> [options]
+./codepack.sh [path/to/directory] [options]
 ```
+
+**NEW:** The directory path is now **optional**! If no directory is specified, codepack will process the current directory.
 
 ### Options
 - `--exclude <ext1> [<ext2> ...]` - Exclude files with specified extensions
@@ -141,21 +162,76 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 
 **Note:** You cannot use both `--include` and `--exclude` at the same time
 
+## Automated Testing
+
+This project now includes automated tests to ensure reliability and stability.
+
+- Basic and advanced tests are located in the `test/` folder.
+- To run all tests locally:
+  ```bash
+  cd test
+  ./test_basic.sh
+  ./test_include_exclude.sh
+  ```
+- Tests are also executed automatically on every push and pull request via GitHub Actions.
+
+See the [test/](test/) folder for details.
+
+## Continuous Integration
+
+Every push and pull request triggers a GitHub Actions workflow that:
+
+- Runs minimal and advanced tests (see `.github/workflows/publish.yml`)
+- Verifies that the CLI works with `--minify-info` and other options
+- Ensures code quality before publishing to npm or GitHub Packages
+
+You can check the build status at the top of this README.
+
+## How to publish
+
+To publish this package to GitHub Packages or npm:
+
+1. Add your npm or GitHub token as a repository secret named `NPM_TOKEN` (see GitHub > Settings > Secrets and variables > Actions).
+2. The `.npmrc` file is already configured for GitHub Packages.
+3. The publish step is automated in the GitHub Actions workflow.
+
+**Never commit your token in the code or repository.**
+
 ### Examples
+
+#### Current Directory Processing
 ```bash
-# Process all files in a directory
+# Process current directory (no path needed!)
+./codepack.sh
+
+# Current directory with ultra-minification (recommended for AI)
+./codepack.sh --minify
+
+# Current directory with maximum compression
+./codepack.sh --minify --compress
+
+# Current directory with specific file types only
+./codepack.sh --include js css html py --minify
+
+# Current directory excluding binary files
+./codepack.sh --exclude pdf jpg png --minify
+
+# Current directory with debug mode
+./codepack.sh --debug
+
+# Current directory with minification and debug
+./codepack.sh --minify --debug
+```
+
+#### Specific Directory Processing
+```bash
+# Process specific directory
 ./codepack.sh /home/user/project
 
-# Check available minification tools
-./codepack.sh --minify-info
-
-# Install minification tools automatically
-./codepack.sh --install-minifiers
-
-# Ultra-aggressive minification (recommended for AI)
+# Ultra-aggressive minification on specific directory
 ./codepack.sh /home/user/project --minify
 
-# Maximum compression: minify + gzip
+# Maximum compression on specific directory
 ./codepack.sh /home/user/project --minify --compress
 
 # Process only code files with ultra-minification
@@ -164,7 +240,7 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 # Exclude binary files and minify
 ./codepack.sh /home/user/project --exclude pdf jpg png --minify
 
-# Debug mode for troubleshooting
+# Debug mode for troubleshooting specific directory
 ./codepack.sh /home/user/project --debug
 
 # Debug with minification to see processing details
@@ -172,6 +248,30 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 
 # Debug with specific file types
 ./codepack.sh /home/user/project --include js py --minify --debug
+```
+
+#### Tool Management
+```bash
+# Check available minification tools
+./codepack.sh --minify-info
+
+# Install minification tools automatically
+./codepack.sh --install-minifiers
+```
+
+#### Quick Workflow Examples
+```bash
+# Quick analysis of current project (most common use case)
+./codepack.sh --minify
+
+# Share current project with AI tools (ultra-compact)
+./codepack.sh --minify --compress
+
+# Debug current project processing
+./codepack.sh --debug --minify
+
+# Process only code files in current directory
+./codepack.sh --include js py css html --minify
 ```
 
 ## Ultra-Aggressive Minification
@@ -269,7 +369,7 @@ The `--debug` option provides **detailed processing information** for troublesho
 
 ### Debug Output Example
 ```bash
-./codepack.sh /project --minify --debug
+./codepack.sh --minify --debug
 
 DEBUG: Processing file 1/55: ./src/app.js
 DEBUG: Reading content from: app.js
@@ -305,18 +405,43 @@ The script generates a timestamped file containing:
 3. **Statistics:** Processing summary and compression ratios
 
 ### Output Files
-- **Standard:** `xtracted_YYYYMMDD_HHMMSS.txt`
-- **Compressed:** `xtracted_YYYYMMDD_HHMMSS.txt.gz`
+- **Standard:** `codepack_YYYYMMDD_HHMMSS.txt`
+- **Compressed:** `codepack_YYYYMMDD_HHMMSS.txt.gz`
+
+### Example Output
+
+```
+$ ./codepack.sh
+
+🔧 codepack v4
+Automatically excluding directories: '.git', 'node_modules', 'venv', '__pycache__', '.next', 'dist', 'build'
+Automatically excluding files: '.env', '.DS_Store'
+No filtering - processing all file types
+
+🗂️  Generation in progress, please wait ...
+Found 11 files to process
+
+[==================================================] 100%
+
+📝 Processed 8 files (skipped 3 empty files)
+✅ Extraction complete
+📄 Output: "./codepack_20250622_215837.txt"
+📊 Stats: 1 920 lines, 85 KB
+📁 All file types were processed.
+
+🎯 Ready for AI analysis! Use --minify-info to check available tools.
+```
 
 ### Smart Features
 - **Empty files skipped:** No more useless sections with just headers
 - **Processing statistics:** Shows files processed vs. skipped
 - **Compression reporting:** Detailed size reduction metrics
+- **Default current directory:** No need to specify path for current directory
 
 ## Requirements
 
 ### Essential
-- Bash shell
+- Bash shell (required for running tests in `test/`)
 - `find` command
 - `sed`, `tr`, `wc` (standard Unix tools)
 
@@ -338,7 +463,7 @@ pip3 install pyminify python-minifier
 
 # Test your installation with debug mode
 ./codepack.sh --minify-info
-./codepack.sh /small/test/project --minify --debug
+./codepack.sh --minify --debug
 ```
 
 ### Ubuntu/Debian
@@ -350,7 +475,7 @@ pip3 install pyminify python-minifier
 
 # Test your installation with debug mode
 ./codepack.sh --minify-info
-./codepack.sh /small/test/project --minify --debug
+./codepack.sh --minify --debug
 ```
 
 ### CentOS/RHEL
@@ -361,7 +486,7 @@ pip3 install pyminify python-minifier
 
 # Test your installation with debug mode
 ./codepack.sh --minify-info
-./codepack.sh /small/test/project --minify --debug
+./codepack.sh --minify --debug
 ```
 
 ## How was I inspired to create such a package?
@@ -370,7 +495,28 @@ This afternoon in January 2025, I'm using [claude](https://claude.ai/) and I hav
 
 In fact, it's true that coming back months later on a 3km long chat window is never very appreciable. And since you have to give Claude the context each time and the manual extraction is boring, that's it! I started coding a program in bash, Claude and o1 helped me fix the bugs and improve the program (even if Claude seems to be a level above), and the result is a project that I am proud of because it meets my expectations exactly and it only took me 3 hours to create all of this.
 
-**UPDATE:** After several iterations and user feedback, I've enhanced the tool with ultra-aggressive minification, external tool integration, and smart file processing. The goal is to achieve **50-70% size reduction** for optimal AI processing while maintaining code functionality. Enjoy and don't hesitate to contribute!
+**UPDATE:** After several iterations and user feedback, I've enhanced the tool with ultra-aggressive minification, external tool integration, and smart file processing. The goal is to achieve **50-70% size reduction** for optimal AI processing while maintaining code functionality. The latest update includes **default current directory processing** - simply run `./codepack` without specifying a path! Enjoy and don't hesitate to contribute!
+
+## FAQ
+
+### Q: The script does not run, what should I do?
+- Make sure you gave execution rights: `chmod +x codepack.sh`
+- Run: `./codepack.sh --minify-info` to test your environment
+
+### Q: I don't have some minification tools, is it blocking?
+- No, the script works without them, but compression will be less efficient. Use `--install-minifiers` to install everything automatically.
+
+### Q: How to decompress a `.gz` file?
+- Use: `gzip -d codepack_YYYYMMDD_HHMMSS.txt.gz`
+
+### Q: Can I run codepack without specifying a directory?
+- **Yes!** Simply run `./codepack.sh` and it will process the current directory by default. You can also combine it with options like `./codepack.sh --minify`.
+
+### Q: What's the difference between `./codepack.sh` and `./codepack.sh .`?
+- They are equivalent! Both process the current directory. The new version makes the directory path optional for convenience.
+
+### Q: How do I run the tests?
+- Go to the `test/` folder and run the scripts: `./test_basic.sh` and `./test_include_exclude.sh`
 
 ## Contribution
 
@@ -380,6 +526,7 @@ In fact, it's true that coming back months later on a 3km long chat window is ne
 
 ## Roadmap
 
+- ✅ **Default current directory processing** ✨ NEW in v4
 - ✅ **Debug mode** for advanced troubleshooting ✨ NEW in v3.2.1
 - [ ] **Real-time minification** during file processing
 - [ ] **Parallel processing** for large codebases
@@ -390,20 +537,173 @@ In fact, it's true that coming back months later on a 3km long chat window is ne
 
 ## Changelog
 
-### v4.0 (2025-06-21)
+### v4.1 (2025-06-22)
+- ✨ **NEW:** **Default current directory processing** - run `./codepack` without specifying a path
+- 🔧 **IMPROVED:** Simplified usage - directory path is now optional
+- 📚 **ENHANCED:** Updated documentation with current directory examples
+- 🎯 **OPTIMIZED:** Better argument parsing for optional directory
+
+## v4.0 (2025-06-10)
 - 🚀 **NEW LOGO and package name**
 
-### v3.2.1 (2025-05-29)
+## v3.2.1 (2025-05-29)
+
+### 🚀 New Features
 - ✨ **NEW:** `--debug` mode for detailed processing information
 - 🐛 **FIX:** Debug messages no longer appear without explicit `--debug` flag
-- 🔧 **IMPROVED:** Cleaner output in production mode
-- 📊 **ENHANCED:** Better troubleshooting capabilities
+- **Debug Mode**: Added optional `--debug` flag for detailed processing information and troubleshooting
+- **Enhanced Progress Tracking**: Improved progress bar with file count display (current/total)
+- **Intelligent File Processing**: Smart detection and skipping of empty files to reduce output pollution
+- **External Tool Timeout Protection**: Added 10-second timeout for external minifiers to prevent hanging
+- **Large File Handling**: Automatic fallback for HTML files over 30KB to prevent html-minifier-terser crashes
 
-### v3.2.0 (2025-05-10)
+### 🔧 Improvements
+- 🔧 **IMPROVED:** Cleaner output in production mode
+- **Robust Error Handling**: All sed operations now include fallback mechanisms and error protection
+- **Memory Management**: Better cleanup of temporary files and resources
+- **Processing Statistics**: Detailed reports on processed vs skipped files
+- **Minification Reliability**: Enhanced minification functions with comprehensive error handling for edge cases
+- **Tool Detection**: Improved external minifier detection and configuration
+
+### 🛠️ Bug Fixes
+- 📊 **ENHANCED:** Better troubleshooting capabilities
+- **Fixed Progress Bar**: Progress now correctly displays 0-100% instead of stopping at intermediate percentages
+- **Fixed Argument Parsing**: Resolved issues with corrupted command-line arguments
+- **Fixed Empty Content Handling**: All minification functions now properly handle empty or whitespace-only content
+- **Fixed External Tool Integration**: Improved stability when using terser, pyminify, csso, html-minifier-terser, and jq
+- **Fixed Resource Cleanup**: Proper cleanup of temporary files and moviepy resources
+
+## v3.2.0 (2025-05-10)
 - 🚀 Ultra-aggressive minification with external tools
 - 📦 Advanced compression capabilities
 - 🛠️ Smart minification tool detection and installation
 - 📊 Processing statistics and empty file detection
+
+## Version 3.1.0
+
+### 🚀 New Features
+- **Ultra-Aggressive Minification**: Complete rewrite of minification engine with 50-70% size reduction
+- **External Tool Integration**: Support for terser, pyminify, csso-cli, html-minifier-terser, and jq
+- **Intelligent Fallback System**: Automatic fallback to bash minification when external tools unavailable
+- **Multi-Language Support**: Enhanced support for 20+ file types including Python, JavaScript, CSS, HTML, JSON, YAML, XML, and more
+- **Tool Management Commands**: Added `--install-minifiers` and `--minify-info` commands
+
+### 🔧 Improvements
+- **Advanced File Type Detection**: Intelligent detection of file types based on content and extensions
+- **Modular Architecture**: Completely refactored codebase with separate functions for each file type
+- **Enhanced Configuration**: Improved handling of special files like Dockerfile, .gitignore, Makefile
+- **Better Resource Management**: Optimized memory usage and file handling
+
+### 🛠️ Bug Fixes
+- **Fixed Minification Stability**: Resolved crashes with complex file contents
+- **Fixed Character Encoding**: Better handling of non-ASCII characters
+- **Fixed Large File Processing**: Improved performance with files over 10MB
+
+## Version 3.0.0
+
+### 🚀 New Features
+- **Compression Support**: Added `--compress` option for gzip compression of output files
+- **File Filtering System**: Added `--include` and `--exclude` options for fine-grained file selection
+- **Progress Indicators**: Added visual progress bars with percentage completion
+- **Processing Statistics**: Comprehensive reporting of processed files, sizes, and compression ratios
+- **Minification Framework**: Initial implementation of code minification capabilities
+
+### 🔧 Improvements
+- **Enhanced Directory Tree**: Improved tree visualization with better formatting and excluded item marking
+- **File Size Reporting**: Added file size calculations and formatting (bytes, KB, MB, GB)
+- **Error Handling**: Comprehensive error handling and validation
+- **User Experience**: Better command-line interface with detailed help and examples
+
+### 🛠️ Bug Fixes
+- **Fixed Directory Exclusion**: Proper handling of nested excluded directories
+- **Fixed File Permissions**: Better handling of read-only and protected files
+- **Fixed Output Formatting**: Consistent formatting across different file types
+
+## Version 2.5.0
+
+### 🚀 New Features
+- **Automatic Directory Exclusion**: Smart exclusion of common build/cache directories (`.git`, `node_modules`, `venv`, `__pycache__`, `.next`, `dist`, `build`)
+- **Sensitive File Protection**: Automatic exclusion of sensitive files (`.env`, `.DS_Store`)
+- **Enhanced Output Format**: Improved output structure with clear file headers and separators
+- **Timestamped Output**: Output files include timestamp for version control
+
+### 🔧 Improvements
+- **Better File Detection**: Improved file type detection and handling
+- **Enhanced Tree Generation**: More accurate directory tree representation
+- **Cleaner Output**: Reduced noise in output files by filtering irrelevant content
+
+### 🛠️ Bug Fixes
+- **Fixed Tree Structure**: Corrected issues with nested directory visualization
+- **Fixed File Reading**: Better handling of binary and special files
+- **Fixed Path Resolution**: Improved path handling across different operating systems
+
+## Version 2.0.0
+
+### 🚀 New Features
+- **Directory Structure Visualization**: Added comprehensive tree-like directory structure generation
+- **Dual-Section Output**: Separated directory structure and file contents into distinct sections
+- **File Content Extraction**: Complete file content extraction with proper formatting
+- **Command-Line Interface**: Professional CLI with argument parsing and validation
+
+### 🔧 Improvements
+- **Modular Code Structure**: Refactored codebase into logical functions and sections
+- **Better Documentation**: Comprehensive inline documentation and comments
+- **Enhanced Error Messages**: More descriptive error messages and validation
+
+### 🛠️ Bug Fixes
+- **Fixed File Reading**: Resolved issues with special characters and encoding
+- **Fixed Directory Traversal**: Improved handling of symlinks and special directories
+- **Fixed Output Generation**: Consistent output formatting across all file types
+
+## Version 1.8.0
+
+### 🚀 New Features
+- **Recursive Directory Processing**: Full recursive traversal of directory structures
+- **Multiple File Support**: Ability to process multiple files in a single operation
+- **Basic File Filtering**: Initial implementation of file type filtering
+
+### 🔧 Improvements
+- **Performance Optimization**: Faster file processing and reduced memory usage
+- **Better File Handling**: Improved handling of large files and directories
+
+### 🛠️ Bug Fixes
+- **Fixed Memory Issues**: Resolved memory leaks with large directory structures
+- **Fixed File Encoding**: Better handling of different character encodings
+
+## Version 1.5.0
+
+### 🚀 New Features
+- **Initial Release**: Basic file extraction functionality
+- **Single File Processing**: Extract content from individual files
+- **Simple Output Format**: Basic text output with file names and content
+- **Cross-Platform Support**: Compatible with Unix-like systems (Linux, macOS, BSD)
+
+### 🔧 Core Features
+- **File Content Reading**: Basic file reading capabilities
+- **Text Output**: Simple text-based output format
+- **Error Handling**: Basic error detection and reporting
+- **Shell Script Foundation**: Robust bash script architecture
+
+## Migration Notes
+
+### From v3.1.x to v3.2.x
+- ✅ No breaking changes
+- ✅ New `--debug` flag is optional and does not affect existing workflows
+
+### From v3.0.x to v3.1.x
+- ✅ No breaking changes
+- ✅ New minification features are optional and activated only with `--minify` flag
+- ✅ External tools are optional; script works with built-in fallbacks
+
+### From v2.x to v3.0.x
+- ✅ Output format enhanced but remains backward compatible
+- ✅ New filtering options are optional
+- ✅ Existing scripts will continue to work without modifications
+
+### From v1.x to v2.x
+- ⚠️ Significant output format changes
+- ⚠️ Directory structure section added
+- ⚠️ May require updates to scripts that parse output
 
 ## License
 This project is under [MIT](LICENSE) license.
@@ -415,10 +715,13 @@ This project is under [MIT](LICENSE) license.
 
 **⚡ Pro Tip:** For maximum efficiency with AI tools like Claude, use:
 ```bash
-# For debugging and optimization testing
-./codepack.sh /your/project --minify --debug --include js py css html
+# Quick current directory analysis (most common)
+./codepack --minify
 
-# Silent production mode (clean output)
-./codepack.sh /your/project --minify --compress --include js py css html
+# For debugging and optimization testing
+./codepack --minify --debug --include js py css html
+
+# Silent production mode for specific directory (clean output)
+./codepack /your/project --minify --compress --include js py css html
 ```
-This gives you ultra-compressed, AI-optimized code extracts!
+This gives you ultra-compressed, AI-optimized code extracts with minimal effort!

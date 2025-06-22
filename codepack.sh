@@ -4,7 +4,7 @@
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 4.0
+# Version: 4.1
 # Dependencies: Optional external minifiers for maximum compression
 # ----------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ MINIFIERS_CHECKED=false
 
 check_minifiers() {
     if $MINIFIERS_CHECKED; then return; fi
-    
+
     command -v terser >/dev/null 2>&1 && MINIFIERS[js]="terser"
     command -v esbuild >/dev/null 2>&1 && MINIFIERS[js]="esbuild"
     command -v pyminify >/dev/null 2>&1 && MINIFIERS[python]="pyminify"
@@ -28,7 +28,7 @@ check_minifiers() {
     command -v html-minifier-terser >/dev/null 2>&1 && MINIFIERS[html]="html-minifier-terser"
     command -v minify >/dev/null 2>&1 && MINIFIERS[multi]="minify"
     command -v jq >/dev/null 2>&1 && MINIFIERS[json]="jq"
-    
+
     MINIFIERS_CHECKED=true
 }
 
@@ -36,27 +36,28 @@ check_minifiers() {
 run_external_minifier() {
     local tool_name="$1"
     local content="$2"
-    local temp_file=$(mktemp)
-    
+    local temp_file
+    temp_file=$(mktemp)
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     echo "$content" > "$temp_file"
-    
+
     # Timeout de 10 secondes pour éviter les blocages
     case "$tool_name" in
-        "terser") 
+        "terser")
             timeout 10 terser --compress drop_console=true,drop_debugger=true --mangle --format ascii_only=true,beautify=false "$temp_file" 2>/dev/null || echo "$content"
             ;;
-        "pyminify") 
+        "pyminify")
             timeout 10 pyminify --remove-literal-statements "$temp_file" 2>/dev/null || echo "$content"
             ;;
-        "csso") 
+        "csso")
             timeout 10 csso "$temp_file" 2>/dev/null || echo "$content"
             ;;
-        "html-minifier-terser") 
+        "html-minifier-terser")
             # Limite la taille pour html-minifier-terser qui peut planter sur de gros fichiers
             if [[ ${#content} -gt 30000 ]]; then
                 debug_log "Fichier HTML trop gros (${#content} chars), fallback bash"
@@ -65,26 +66,26 @@ run_external_minifier() {
                 timeout 10 html-minifier-terser --collapse-whitespace --remove-comments --remove-optional-tags --remove-redundant-attributes --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype --minify-css --minify-js "$temp_file" 2>/dev/null || echo "$content"
             fi
             ;;
-        "jq") 
+        "jq")
             timeout 10 jq -c . "$temp_file" 2>/dev/null || echo "$content"
             ;;
-        *) 
+        *)
             echo "$content"
             ;;
     esac
-    
+
     rm -f "$temp_file"
 }
 
 # ====== MINIFICATION FUNCTIONS ======
 minify_javascript() {
     local content="$1"
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     if [[ -n "${MINIFIERS[js]}" ]]; then
         run_external_minifier "${MINIFIERS[js]}" "$content"
     else
@@ -101,12 +102,12 @@ minify_javascript() {
 
 minify_python() {
     local content="$1"
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     if [[ -n "${MINIFIERS[python]}" ]]; then
         run_external_minifier "${MINIFIERS[python]}" "$content"
     else
@@ -125,12 +126,12 @@ minify_python() {
 
 minify_css() {
     local content="$1"
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     if [[ -n "${MINIFIERS[css]}" ]]; then
         run_external_minifier "${MINIFIERS[css]}" "$content"
     else
@@ -148,12 +149,12 @@ minify_css() {
 
 minify_html() {
     local content="$1"
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     if [[ -n "${MINIFIERS[html]}" ]]; then
         run_external_minifier "${MINIFIERS[html]}" "$content"
     else
@@ -169,12 +170,12 @@ minify_html() {
 
 minify_json() {
     local content="$1"
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     if [[ -n "${MINIFIERS[json]}" ]]; then
         run_external_minifier "${MINIFIERS[json]}" "$content"
     else
@@ -191,12 +192,12 @@ minify_json() {
 
 minify_generic() {
     local content="$1"
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     echo "$content" | \
     sed '/^[[:space:]]*#/d' 2>/dev/null | \
     sed 's/[[:space:]]*#.*$//' 2>/dev/null | \
@@ -210,12 +211,12 @@ minify_content() {
     local content="$2"
     local file_type
     file_type=$(get_file_type "$file")
-    
+
     if [[ -z "$content" ]]; then
         echo ""
         return
     fi
-    
+
     case "$file_type" in
         javascript) minify_javascript "$content" ;;
         css) minify_css "$content" ;;
@@ -236,7 +237,7 @@ debug_log() {
 }
 show_usage() {
     cat <<EOF
-Usage: ./codepack.sh <path/to/directory> [options]
+Usage: ./codepack.sh [path/to/directory] [options]
 Options:
   --exclude <ext1> [<ext2> ...]  Exclude files with specified extensions
   --include <ext1> [<ext2> ...]  Include ONLY files with specified extensions
@@ -245,9 +246,11 @@ Options:
   --install-minifiers           Install recommended external minification tools
   --minify-info                 Show available minification tools
 Examples:
-  ./codepack.sh /home/user/project --minify --compress
-  ./codepack.sh /home/user/project --install-minifiers
-  ./codepack.sh /home/user/project --minify-info
+  ./codepack.sh                              # Process current directory
+  ./codepack.sh --minify --compress          # Process current directory with minification and compression
+  ./codepack.sh /home/user/project --minify  # Process specific directory with minification
+  ./codepack.sh --install-minifiers          # Install minification tools
+  ./codepack.sh --minify-info                # Show minification tools status
 EOF
     exit 1
 }
@@ -256,7 +259,7 @@ show_minify_info() {
     check_minifiers
     echo "🔧 Minification Tools Status:"
     echo "================================"
-    
+
     echo "JavaScript/TypeScript:"
     if [[ -n "${MINIFIERS[js]}" ]]; then
         echo "  ✅ ${MINIFIERS[js]} (external)"
@@ -264,7 +267,7 @@ show_minify_info() {
         echo "  ⛔ Not installed"
         echo "  📥 Install: npm install -g terser"
     fi
-    
+
     echo "Python:"
     if [[ -n "${MINIFIERS[python]}" ]]; then
         echo "  ✅ ${MINIFIERS[python]} (external)"
@@ -272,7 +275,7 @@ show_minify_info() {
         echo "  ⛔ Not installed"
         echo "  📥 Install: pip3 install pyminify"
     fi
-    
+
     echo "CSS:"
     if [[ -n "${MINIFIERS[css]}" ]]; then
         echo "  ✅ ${MINIFIERS[css]} (external)"
@@ -280,7 +283,7 @@ show_minify_info() {
         echo "  ⛔ Not installed"
         echo "  📥 Install: npm install -g csso-cli"
     fi
-    
+
     echo "HTML:"
     if [[ -n "${MINIFIERS[html]}" ]]; then
         echo "  ✅ ${MINIFIERS[html]} (external)"
@@ -288,7 +291,7 @@ show_minify_info() {
         echo "  ⛔ Not installed"
         echo "  📥 Install: npm install -g html-minifier-terser"
     fi
-    
+
     echo "JSON:"
     if [[ -n "${MINIFIERS[json]}" ]]; then
         echo "  ✅ jq (system)"
@@ -296,7 +299,7 @@ show_minify_info() {
         echo "  ⛔ Not installed"
         echo "  📥 Install: jq (via package manager)"
     fi
-    
+
     echo
     echo "💡 Run with --install-minifiers to auto-install available tools"
     exit 0
@@ -305,7 +308,7 @@ show_minify_info() {
 install_minifiers() {
     echo "🚀 Installing recommended minifiers for maximum compression..."
     echo
-    
+
     if command -v npm >/dev/null 2>&1; then
         echo "📦 Installing npm packages globally..."
         npm install -g terser csso-cli clean-css-cli html-minifier-terser 2>/dev/null || {
@@ -314,7 +317,7 @@ install_minifiers() {
     else
         echo "⚠️  npm not found. Install Node.js first: https://nodejs.org/"
     fi
-    
+
     if command -v pip3 >/dev/null 2>&1; then
         echo "🐍 Installing Python packages..."
         pip3 install pyminify python-minifier 2>/dev/null || {
@@ -323,7 +326,7 @@ install_minifiers() {
     else
         echo "⚠️  pip3 not found. Install Python 3 first."
     fi
-    
+
     echo "📝 JSON minifier (jq) installation:"
     if command -v jq >/dev/null 2>&1; then
         echo "  ✅ jq is already installed"
@@ -333,7 +336,7 @@ install_minifiers() {
         echo "     • Ubuntu/Debian: sudo apt install jq"
         echo "     • Windows: winget install jqlang.jq"
     fi
-    
+
     echo
     echo "✅ Installation complete. Re-run your command to use external minifiers."
     echo "💡 Use --minify-info to check installation status."
@@ -405,10 +408,12 @@ show_progress() {
         progress+="="
     fi
     progress+="] $percent%"
-    echo -ne "\r$progress"
+
     if [ "$current" -eq "$total" ]; then
         echo -e "\r[==================================================] 100%"
         echo ""
+    else
+        echo -ne "\r$progress"
     fi
 }
 
@@ -434,10 +439,11 @@ compress_output_file() {
 
 get_file_type() {
     local file="$1"
-    local filename=$(basename "$file")
+    local filename
+    filename=$(basename "$file")
     local extension="${file##*.}"
     extension="${extension,,}"
-    
+
     case "$filename" in
         .gitignore|.dockerignore|.eslintignore|.prettierignore|.npmignore) echo "ignore" ;;
         Dockerfile|dockerfile) echo "dockerfile" ;;
@@ -447,7 +453,7 @@ get_file_type() {
         .env*) echo "env" ;;
         .editorconfig) echo "text" ;;
         .htaccess) echo "text" ;;
-        *) 
+        *)
             case "$extension" in
                 js|jsx|ts|tsx|mjs) echo "javascript" ;;
                 css|scss|sass|less) echo "css" ;;
@@ -486,16 +492,22 @@ parse_args() {
     minify_mode=false
     debug_mode=false
 
-    if [ "$#" -eq 0 ]; then show_usage; fi
-    
+    # Traitement des commandes spéciales sans argument de répertoire
     if [[ "$1" == "--install-minifiers" ]]; then
         install_minifiers
     elif [[ "$1" == "--minify-info" ]]; then
         show_minify_info
     fi
-    
-    directory="$1"
-    shift
+
+    # Déterminer le répertoire à traiter
+    if [ "$#" -eq 0 ] || [[ "$1" =~ ^-- ]]; then
+        # Aucun argument ou le premier argument est une option : utiliser le répertoire courant
+        directory="."
+    else
+        # Le premier argument est le répertoire
+        directory="$1"
+        shift
+    fi
 
     while [[ $# -gt 0 ]]; do
         key="$1"
@@ -558,7 +570,7 @@ parse_args() {
         exit 1
     fi
 
-    output_file="${directory}/xtracted_$(date +%Y%m%d_%H%M%S).txt"
+    output_file="${directory}/codepack_$(date +%Y%m%d_%H%M%S).txt"
 }
 
 # ====== FILTERS ======
@@ -589,7 +601,7 @@ should_exclude_file() {
     for exclude_file in "${exclude_files[@]}"; do
         if [[ "$filename" == "$exclude_file" ]]; then return 0; fi
     done
-    if [[ "$file" == "$output_file" || "$filename" =~ ^xtracted_.*\.txt$ ]]; then return 0; fi
+    if [[ "$file" == "$output_file" || "$filename" =~ ^codepack_.*\.txt$ ]]; then return 0; fi
     return 1
 }
 
@@ -609,7 +621,7 @@ generate_tree() {
     local dirs=()
     local excluded_dirs=()
     local excluded_files=()
-    
+
     while IFS= read -r -d '' path; do
         if [[ -d "$path" ]]; then
             local name
@@ -627,7 +639,7 @@ generate_tree() {
             local filename
             filename=$(basename "$path")
             local exclude=0
-            if [[ "$path" == "$output_file" || "$filename" =~ ^xtracted_.*\.txt$ ]]; then continue; fi
+            if [[ "$path" == "$output_file" || "$filename" =~ ^codepack_.*\.txt$ ]]; then continue; fi
             for exclude_file in "${exclude_files[@]}"; do
                 if [[ "$filename" == "$exclude_file" ]]; then
                     excluded_files+=("$path")
@@ -640,10 +652,10 @@ generate_tree() {
             fi
         fi
     done < <(find "$dir" -maxdepth 1 -mindepth 1 -print0 2>/dev/null | sort -z)
-    
+
     local total_items=$((${#dirs[@]} + ${#excluded_dirs[@]} + ${#files[@]} + ${#excluded_files[@]}))
     local items_processed=0
-    
+
     for path in "${dirs[@]}"; do
         local name
         name=$(basename "$path")
@@ -657,7 +669,7 @@ generate_tree() {
         fi
         generate_tree "$path" "$new_prefix"
     done
-    
+
     for path in "${excluded_dirs[@]}"; do
         local name
         name=$(basename "$path")
@@ -668,7 +680,7 @@ generate_tree() {
             echo "${prefix}├── $name/ (excluded)"
         fi
     done
-    
+
     for path in "${files[@]}"; do
         local name
         name=$(basename "$path")
@@ -679,7 +691,7 @@ generate_tree() {
             echo "${prefix}├── $name"
         fi
     done
-    
+
     for path in "${excluded_files[@]}"; do
         local name
         name=$(basename "$path")
@@ -700,7 +712,7 @@ list_files_to_process() {
         find_cmd+=" -not -path \"*/$exclude_dir/*\""
     done
     find_cmd+=" -type f -print0"
-    
+
     while IFS= read -r -d '' file; do
         local filename
         filename=$(basename "$file")
@@ -708,7 +720,7 @@ list_files_to_process() {
         for exclude_file in "${exclude_files[@]}"; do
             if [[ "$filename" == "$exclude_file" ]]; then exclude=1; break; fi
         done
-        if [[ "$filename" =~ ^xtracted_.*\.txt$ ]]; then exclude=1; fi
+        if [[ "$filename" =~ ^codepack_.*\.txt$ ]]; then exclude=1; fi
         if [[ $exclude -eq 0 ]] && should_process_file "$file"; then
             echo "$file"
         fi
@@ -725,39 +737,39 @@ extract_files_content() {
     local total_files="${#files[@]}"
     local current_file=0
     local processed_files=0
-    
+
     for file in "${files[@]}"; do
         current_file=$((current_file + 1))
-        
+
         debug_log "Processing file $current_file/$total_files: $file" >&2
-        
+
         if ! should_exclude_dir "$file" && ! should_exclude_file "$file" && should_process_file "$file"; then
             local filename
             filename=$(basename "$file")
-            
+
             debug_log "Reading content from: $filename" >&2
-            
+
             # Read file content and clean invalid characters
             local content=""
             if [[ -r "$file" && -s "$file" ]]; then
                 content=$(cat "$file" 2>/dev/null | sed 's/�/ /g' 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
             fi
-            
+
             debug_log "Content length: ${#content}" >&2
-            
+
             # Apply ultra-aggressive minification if enabled
             if $minify_mode && [[ -n "$content" ]]; then
                 debug_log "Starting minification for: $filename" >&2
                 content=$(minify_content "$file" "$content" 2>/dev/null || echo "$content")
                 debug_log "Minification complete for: $filename" >&2
             fi
-            
+
             # Check if content is empty or only whitespace after processing
             local cleaned_content=""
             if [[ -n "$content" ]]; then
                 cleaned_content=$(echo "$content" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' 2>/dev/null | sed '/^[[:space:]]*$/d' 2>/dev/null)
             fi
-            
+
             # Only write to output if file has actual content
             if [[ -n "$cleaned_content" ]]; then
                 debug_log "Writing to output: $filename" >&2
@@ -771,13 +783,10 @@ extract_files_content() {
                 processed_files=$((processed_files + 1))
             fi
         fi
-        
+
         show_progress "$current_file" "$total_files"
     done
-    
-    echo -e "\r[==================================================] 100%"
-    echo ""
-    
+
     # Report how many files were actually processed vs total found
     if [ "$processed_files" -lt "$total_files" ]; then
         local skipped_files=$((total_files - processed_files))
@@ -789,12 +798,12 @@ extract_files_content() {
 main() {
     parse_args "$@"
     check_minifiers
-    
+
     echo ""
-    echo "🔧 codepack v4.0"
+    echo "🔧 codepack v4.1"
     echo "Automatically excluding directories: $(printf "'%s', " "${exclude_dirs[@]}" | sed 's/, $//')"
     echo "Automatically excluding files: $(printf "'%s', " "${exclude_files[@]}" | sed 's/, $//')"
-    
+
     if [ ${#exclude_extensions[@]} -gt 0 ]; then
         echo "Excluded extensions: ${exclude_extensions[*]}"
     elif [ ${#include_extensions[@]} -gt 0 ]; then
@@ -802,7 +811,7 @@ main() {
     else
         echo "No filtering - processing all file types"
     fi
-    
+
     if $minify_mode; then
         echo ""
         echo "🚀 Ultra-aggressive minification enabled:"
@@ -813,7 +822,7 @@ main() {
         [[ -n "${MINIFIERS[html]}" ]] && echo "  ✅ HTML: ${MINIFIERS[html]}" && ((minifier_count++))
         [[ -n "${MINIFIERS[json]}" ]] && echo "  ✅ JSON: jq" && ((minifier_count++))
         [[ -n "${MINIFIERS[multi]}" ]] && echo "  ✅ Multi-format: ${MINIFIERS[multi]}" && ((minifier_count++))
-        
+
         if [ "$minifier_count" -eq 0 ]; then
             echo "  ⚠️  Using fallback bash minification only"
             echo "  💡 Run with --install-minifiers for better compression"
@@ -821,28 +830,28 @@ main() {
             echo "  🎯 Expected compression: 50-70% size reduction"
         fi
     fi
-    
+
     if $compress_mode; then
         echo "📦 Compression enabled - will generate compressed .gz file"
     fi
-    
+
     if $debug_mode; then
         echo "🔍 Debug mode enabled - showing detailed processing information"
     fi
-    
+
     echo ""
     echo "🗂️  Generation in progress, please wait ..."
-    
+
     total_files=$(count_files_to_process "$directory")
     formatted_total=$(format_number "$total_files")
     echo "Found $formatted_total files to process"
     echo ""
-    
+
     if [ "$total_files" -eq 0 ]; then
         echo "No files to process in this directory (after exclusions)."
         exit 0
     fi
-    
+
     # Generate header
     {
         echo "+---------------------------------------------+"
@@ -873,25 +882,25 @@ main() {
             fi
         fi
     } > "$output_file"
-    
+
     mapfile -t files < <(list_files_to_process "$directory")
     extract_files_content "${files[@]}"
-    
+
     if [ ! -f "$output_file" ]; then
         echo "Error: Output file was not generated."
         exit 1
     fi
-    
+
     # Display results
     local final_size
     final_size=$(get_file_size "$output_file")
     local line_count
     line_count=$(get_line_count "$output_file")
-    
+
     echo "✅ Extraction complete"
     echo "📄 Output: \"$output_file\""
     echo "📊 Stats: $(format_number "$line_count") lines, $(format_file_size "$final_size")"
-    
+
     if $exclude_mode; then
         echo "🚫 Files with extensions ${exclude_extensions[*]} were excluded."
     elif $include_mode; then
@@ -899,7 +908,7 @@ main() {
     else
         echo "📁 All file types were processed."
     fi
-    
+
     if $minify_mode; then
         local minifier_count=0
         [[ -n "${MINIFIERS[js]}" ]] && ((minifier_count++))
@@ -908,7 +917,7 @@ main() {
         [[ -n "${MINIFIERS[html]}" ]] && ((minifier_count++))
         [[ -n "${MINIFIERS[json]}" ]] && ((minifier_count++))
         [[ -n "${MINIFIERS[multi]}" ]] && ((minifier_count++))
-        
+
         echo "🚀 Ultra-aggressive minification applied for optimal AI processing."
         if [ "$minifier_count" -gt 0 ]; then
             echo "⚡ Used $minifier_count external minification tools."
@@ -916,12 +925,12 @@ main() {
             echo "💡 Install external tools with --install-minifiers for better compression."
         fi
     fi
-    
+
     if $compress_mode; then
         echo ""
         compress_output_file "$output_file"
     fi
-    
+
     echo ""
     echo "🎯 Ready for AI analysis! Use --minify-info to check available tools."
     exit 0
