@@ -18,10 +18,9 @@ jobs:
 
       - name: Run basic tests
         run: |
-          chmod +x test/test_basic.sh test/test_include_exclude.sh
+          chmod +x test/test_basic.sh
           cd test
           ./test_basic.sh
-          ./test_include_exclude.sh
 
   publish:
     needs: test

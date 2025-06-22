@@ -171,7 +171,6 @@ This project now includes automated tests to ensure reliability and stability.
   ```bash
   cd test
   ./test_basic.sh
-  ./test_include_exclude.sh
   ```
 - Tests are also executed automatically on every push and pull request via GitHub Actions.
 
@@ -516,7 +515,7 @@ In fact, it's true that coming back months later on a 3km long chat window is ne
 - They are equivalent! Both process the current directory. The new version makes the directory path optional for convenience.
 
 ### Q: How do I run the tests?
-- Go to the `test/` folder and run the scripts: `./test_basic.sh` and `./test_include_exclude.sh`
+- Go to the `test/` folder and run the scripts: `./test_basic.sh`
 
 ## Contribution
 
