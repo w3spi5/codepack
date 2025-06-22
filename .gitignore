@@ -44,3 +44,5 @@ venv/
 codepack_*.txt
 codepack_*.txt.gz
 /refs/
+/test/*.txt
+/test/*.txt.gz

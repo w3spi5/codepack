@@ -580,11 +580,11 @@ should_process_file() {
     if [ "$extension" = "$file" ] && $include_mode; then
         return 1
     fi
-    if $include_mode; then
-        for ext in "${include_extensions[@]}"; do
-            if [ "$extension" = "$ext" ]; then return 0; fi
+    if $exclude_mode; then
+        for ext in "${exclude_extensions[@]}"; do
+            clean_ext="${ext#.}"
+            if [ "$extension" = "$clean_ext" ]; then return 1; fi
         done
-        return 1
     fi
     if $exclude_mode; then
         for ext in "${exclude_extensions[@]}"; do
