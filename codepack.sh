@@ -796,6 +796,8 @@ extract_files_content() {
 
 # ====== MAIN FUNCTION ======
 main() {
+    local start_time
+    start_time=$(date +%s)
     parse_args "$@"
     check_minifiers
 
@@ -897,9 +899,31 @@ main() {
     local line_count
     line_count=$(get_line_count "$output_file")
 
+    local end_time
+    end_time=$(date +%s)
+    local elapsed=$((end_time - start_time))
+    local time_str=""
+    if [ "$elapsed" -lt 30 ]; then
+        time_str="only $elapsed seconds !!"
+    elif [ "$elapsed" -ge 3600 ]; then
+        local hours=$((elapsed / 3600))
+        local mins=$(( (elapsed % 3600) / 60 ))
+        local secs=$((elapsed % 60))
+        time_str="${hours}h"
+        [ $mins -gt 0 ] && time_str="${time_str}${mins}min"
+        [ $secs -gt 0 ] && time_str="${time_str}${secs}s"
+    elif [ "$elapsed" -ge 60 ]; then
+        local mins=$((elapsed / 60))
+        local secs=$((elapsed % 60))
+        time_str="${mins}min"
+        [ $secs -gt 0 ] && time_str="${time_str}${secs}s"
+    else
+        time_str="${elapsed}s"
+    fi
+
     echo "✅ Extraction complete"
     echo "📄 Output: \"$output_file\""
-    echo "📊 Stats: $(format_number "$line_count") lines, $(format_file_size "$final_size")"
+    echo "📊 Stats: $(format_number "$line_count") lines, $(format_file_size "$final_size"), in $time_str"
 
     if $exclude_mode; then
         echo "🚫 Files with extensions ${exclude_extensions[*]} were excluded."
