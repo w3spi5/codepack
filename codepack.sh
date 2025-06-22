@@ -1,10 +1,10 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# x-tractor - CLI tool to extract folder structure and file contents
+# codepack - CLI tool to extract folder structure and file contents
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 3.2.1 (321)
+# Version: 4.0
 # Dependencies: Optional external minifiers for maximum compression
 # ----------------------------------------------------------------------------
 
@@ -236,7 +236,7 @@ debug_log() {
 }
 show_usage() {
     cat <<EOF
-Usage: ./x-tractor.sh <path/to/directory> [options]
+Usage: ./codepack.sh <path/to/directory> [options]
 Options:
   --exclude <ext1> [<ext2> ...]  Exclude files with specified extensions
   --include <ext1> [<ext2> ...]  Include ONLY files with specified extensions
@@ -245,9 +245,9 @@ Options:
   --install-minifiers           Install recommended external minification tools
   --minify-info                 Show available minification tools
 Examples:
-  ./x-tractor.sh /home/user/project --minify --compress
-  ./x-tractor.sh /home/user/project --install-minifiers
-  ./x-tractor.sh /home/user/project --minify-info
+  ./codepack.sh /home/user/project --minify --compress
+  ./codepack.sh /home/user/project --install-minifiers
+  ./codepack.sh /home/user/project --minify-info
 EOF
     exit 1
 }
@@ -791,7 +791,7 @@ main() {
     check_minifiers
     
     echo ""
-    echo "🔧 x-tractor v3.2.1 (321)"
+    echo "🔧 codepack v4.0"
     echo "Automatically excluding directories: $(printf "'%s', " "${exclude_dirs[@]}" | sed 's/, $//')"
     echo "Automatically excluding files: $(printf "'%s', " "${exclude_files[@]}" | sed 's/, $//')"
     

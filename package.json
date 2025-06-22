@@ -1,17 +1,17 @@
 {
-  "name": "@w3spi5/x-tractor",
+  "name": "@w3spi5/codepack",
   "version": "2.8.1",
   "description": "CLI tool for folder structure and file content extraction",
-  "main": "x-tractor.sh",
+  "main": "codepack.sh",
   "bin": {
-    "xtractor": "x-tractor.sh"
+    "xtractor": "codepack.sh"
   },
   "files": [
-    "x-tractor.sh",
+    "codepack.sh",
     "LICENSE",
     "README.md"
   ],
-  "repository": "git://github.com/w3spi5/x-tractor.git",
+  "repository": "git://github.com/w3spi5/codepack.git",
   "author": "w3spi5",
   "license": "MIT",
   "publishConfig": {

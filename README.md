@@ -1,7 +1,7 @@
-# X-TRACTOR v3.2.1
+# codepack v4.0
 
 <p align="center">
-  <img src="logo.webp" alt="x-tractor Logo" width="500"/>
+  <img src="logo.png" alt="codepack Logo" width="200"/>
 </p>
 
 Ultra-efficient CLI tool to extract folder structure and file contents with advanced minification for AI processing.
@@ -103,9 +103,9 @@ It's an essential utility for developers, system administrators, and power users
 ## Installation
 
 ```bash
-git clone https://github.com/w3spi5/x-tractor.git
-cd x-tractor
-chmod +x x-tractor.sh
+git clone https://github.com/w3spi5/codepack.git
+cd codepack
+chmod +x codepack.sh
 ```
 
 ### Install External Minification Tools (Recommended)
@@ -114,7 +114,7 @@ For maximum compression (50-70% size reduction), install external tools:
 
 ```bash
 # Automatic installation
-./x-tractor.sh --install-minifiers
+./codepack.sh --install-minifiers
 
 # Manual installation
 npm install -g terser csso-cli html-minifier-terser  # JavaScript, CSS, HTML
@@ -127,7 +127,7 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 ## Usage
 
 ```bash
-./x-tractor.sh <path/to/directory> [options]
+./codepack.sh <path/to/directory> [options]
 ```
 
 ### Options
@@ -144,34 +144,34 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 ### Examples
 ```bash
 # Process all files in a directory
-./x-tractor.sh /home/user/project
+./codepack.sh /home/user/project
 
 # Check available minification tools
-./x-tractor.sh --minify-info
+./codepack.sh --minify-info
 
 # Install minification tools automatically
-./x-tractor.sh --install-minifiers
+./codepack.sh --install-minifiers
 
 # Ultra-aggressive minification (recommended for AI)
-./x-tractor.sh /home/user/project --minify
+./codepack.sh /home/user/project --minify
 
 # Maximum compression: minify + gzip
-./x-tractor.sh /home/user/project --minify --compress
+./codepack.sh /home/user/project --minify --compress
 
 # Process only code files with ultra-minification
-./x-tractor.sh /home/user/project --include js css html py --minify
+./codepack.sh /home/user/project --include js css html py --minify
 
 # Exclude binary files and minify
-./x-tractor.sh /home/user/project --exclude pdf jpg png --minify
+./codepack.sh /home/user/project --exclude pdf jpg png --minify
 
 # Debug mode for troubleshooting
-./x-tractor.sh /home/user/project --debug
+./codepack.sh /home/user/project --debug
 
 # Debug with minification to see processing details
-./x-tractor.sh /home/user/project --minify --debug
+./codepack.sh /home/user/project --minify --debug
 
 # Debug with specific file types
-./x-tractor.sh /home/user/project --include js py --minify --debug
+./codepack.sh /home/user/project --include js py --minify --debug
 ```
 
 ## Ultra-Aggressive Minification
@@ -269,7 +269,7 @@ The `--debug` option provides **detailed processing information** for troublesho
 
 ### Debug Output Example
 ```bash
-./x-tractor.sh /project --minify --debug
+./codepack.sh /project --minify --debug
 
 DEBUG: Processing file 1/55: ./src/app.js
 DEBUG: Reading content from: app.js
@@ -337,8 +337,8 @@ npm install -g terser csso-cli html-minifier-terser
 pip3 install pyminify python-minifier
 
 # Test your installation with debug mode
-./x-tractor.sh --minify-info
-./x-tractor.sh /small/test/project --minify --debug
+./codepack.sh --minify-info
+./codepack.sh /small/test/project --minify --debug
 ```
 
 ### Ubuntu/Debian
@@ -349,8 +349,8 @@ npm install -g terser csso-cli html-minifier-terser
 pip3 install pyminify python-minifier
 
 # Test your installation with debug mode
-./x-tractor.sh --minify-info
-./x-tractor.sh /small/test/project --minify --debug
+./codepack.sh --minify-info
+./codepack.sh /small/test/project --minify --debug
 ```
 
 ### CentOS/RHEL
@@ -360,8 +360,8 @@ npm install -g terser csso-cli html-minifier-terser
 pip3 install pyminify python-minifier
 
 # Test your installation with debug mode
-./x-tractor.sh --minify-info
-./x-tractor.sh /small/test/project --minify --debug
+./codepack.sh --minify-info
+./codepack.sh /small/test/project --minify --debug
 ```
 
 ## How was I inspired to create such a package?
@@ -390,13 +390,16 @@ In fact, it's true that coming back months later on a 3km long chat window is ne
 
 ## Changelog
 
-### v3.2.1 (2025-01-28)
+### v4.0 (2025-06-21)
+- 🚀 **NEW LOGO and package name**
+
+### v3.2.1 (2025-05-29)
 - ✨ **NEW:** `--debug` mode for detailed processing information
 - 🐛 **FIX:** Debug messages no longer appear without explicit `--debug` flag
 - 🔧 **IMPROVED:** Cleaner output in production mode
 - 📊 **ENHANCED:** Better troubleshooting capabilities
 
-### v3.2.0 (320)
+### v3.2.0 (2025-05-10)
 - 🚀 Ultra-aggressive minification with external tools
 - 📦 Advanced compression capabilities
 - 🛠️ Smart minification tool detection and installation
@@ -413,9 +416,9 @@ This project is under [MIT](LICENSE) license.
 **⚡ Pro Tip:** For maximum efficiency with AI tools like Claude, use:
 ```bash
 # For debugging and optimization testing
-./x-tractor.sh /your/project --minify --debug --include js py css html
+./codepack.sh /your/project --minify --debug --include js py css html
 
 # Silent production mode (clean output)
-./x-tractor.sh /your/project --minify --compress --include js py css html
+./codepack.sh /your/project --minify --compress --include js py css html
 ```
 This gives you ultra-compressed, AI-optimized code extracts!
