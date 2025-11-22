@@ -46,3 +46,4 @@ codepack_*.txt.gz
 /refs/
 /test/*.txt
 /test/*.txt.gz
+/exposed/*
