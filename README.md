@@ -33,8 +33,11 @@ It's an essential utility for developers, system administrators, and power users
 - ⚡ **ULTRA-AGGRESSIVE:** Advanced minification with `--minify` option (50-70% size reduction)
 - 🛠️ **SMART:** External minification tools integration for maximum compression
 - 📦 Compress output files with `--compress` option
+- 📋 **CLIPBOARD:** Copy output directly to clipboard with `--copy`
 - 🔍 **DEBUG MODE:** Advanced debugging with `--debug` option for troubleshooting
 - 🗂️ **INTELLIGENT:** Skip empty files automatically (no more useless sections)
+- 🧠 **AI TOKENS:** Estimated token count in stats
+- 🚫 **BINARY SAFE:** Automatically detects and skips binary files
 - 🔄 Support for special files (`.gitignore`, `Dockerfile`, `README`, etc.)
 - 🎨 Produces aesthetically pleasing tree-like output
 - 🔄 Supports versioning of extracted data
@@ -156,6 +159,7 @@ go install github.com/tdewolff/minify/v2/cmd/minify@latest  # Multi-format (opti
 - `--include <ext1> [<ext2> ...]` - Include ONLY files with specified extensions
 - `--minify` - **Ultra-aggressive minification** (50-70% size reduction with external tools)
 - `--compress` - Compress output file with gzip
+- `--copy` - Copy output to system clipboard (requires pbcopy, xclip, wl-copy, or clip.exe)
 - `--debug` - **Enable debug mode** for detailed processing information
 - `--install-minifiers` - Install recommended external minification tools
 - `--minify-info` - Show status of available minification tools

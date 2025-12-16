@@ -242,6 +242,7 @@ Options:
   --exclude <ext1> [<ext2> ...]  Exclude files with specified extensions
   --include <ext1> [<ext2> ...]  Include ONLY files with specified extensions
   --compress                     Compress output file with gzip
+  --copy                         Copy output to system clipboard
   --minify                       Ultra-aggressive minification for AI processing
   --install-minifiers           Install recommended external minification tools
   --minify-info                 Show available minification tools
@@ -357,6 +358,12 @@ format_number() {
         fi
     done
     echo "$result"
+}
+
+estimate_tokens() {
+    local file_size="$1"
+    # Estimation brute: 1 token ≈ 4 caractères
+    echo "$((file_size / 4))"
 }
 
 format_file_size() {
@@ -480,6 +487,28 @@ get_file_type() {
     esac
 }
 
+copy_to_clipboard() {
+    local file="$1"
+    if command -v pbcopy >/dev/null 2>&1; then
+        cat "$file" | pbcopy
+        echo "📋 Copied to clipboard (pbcopy)!"
+    elif command -v wl-copy >/dev/null 2>&1; then
+        cat "$file" | wl-copy
+        echo "📋 Copied to clipboard (wl-copy)!"
+    elif command -v xclip >/dev/null 2>&1; then
+        cat "$file" | xclip -selection clipboard
+        echo "📋 Copied to clipboard (xclip)!"
+    elif command -v xsel >/dev/null 2>&1; then
+        cat "$file" | xsel --clipboard --input
+        echo "📋 Copied to clipboard (xsel)!"
+    elif command -v clip.exe >/dev/null 2>&1; then
+        cat "$file" | clip.exe
+        echo "📋 Copied to clipboard (clip.exe)!"
+    else
+        echo "⚠️  Clipboard tool not found. Please install xclip, xsel, wl-copy or use macOS/WSL."
+    fi
+}
+
 # ====== ARGUMENTS & GLOBALS ======
 parse_args() {
     exclude_dirs=("${DEFAULT_EXCLUDE_DIRS[@]}")
@@ -490,6 +519,7 @@ parse_args() {
     exclude_mode=false
     compress_mode=false
     minify_mode=false
+    copy_mode=false
     debug_mode=false
 
     # Traitement des commandes spéciales sans argument de répertoire
@@ -540,6 +570,10 @@ parse_args() {
                 compress_mode=true
                 shift
                 ;;
+            --copy)
+                copy_mode=true
+                shift
+                ;;
             --minify)
                 minify_mode=true
                 shift
@@ -574,6 +608,31 @@ parse_args() {
 }
 
 # ====== FILTERS ======
+is_binary() {
+    local file="$1"
+
+    # Treat empty files as non-binary (safe to process)
+    if [ ! -s "$file" ]; then
+        return 1
+    fi
+
+    # Check if grep supports -I (ignore binary)
+    if grep --help 2>&1 | grep -q -- "-I"; then
+        if grep -I -q "" "$file" 2>/dev/null; then
+            return 1 # Not binary (text)
+        else
+            return 0 # Binary
+        fi
+    else
+        # Fallback: check for null bytes in the first 1000 bytes
+        if head -c 1000 "$file" | grep -qP '\x00'; then
+            return 0 # Binary
+        else
+            return 1 # Not binary
+        fi
+    fi
+}
+
 should_process_file() {
     local file="$1"
     local extension="${file##*.}"
@@ -749,6 +808,12 @@ extract_files_content() {
 
             debug_log "Reading content from: $filename" >&2
 
+            if is_binary "$file"; then
+                 echo "⚠️  Skipping binary file: $filename" >&2
+                 debug_log "Binary file detected, skipping content." >&2
+                 continue
+            fi
+
             # Read file content and clean invalid characters
             local content=""
             if [[ -r "$file" && -s "$file" ]]; then
@@ -923,7 +988,8 @@ main() {
 
     echo "✅ Extraction complete"
     echo "📄 Output: \"$output_file\""
-    echo "📊 Stats: $(format_number "$line_count") lines, $(format_file_size "$final_size"), in $time_str"
+    local estimated_tokens=$(estimate_tokens "$final_size")
+    echo "📊 Stats: $(format_number "$line_count") lines, $(format_file_size "$final_size") (~$(format_number "$estimated_tokens") tokens), in $time_str"
 
     if $exclude_mode; then
         echo "🚫 Files with extensions ${exclude_extensions[*]} were excluded."
@@ -948,6 +1014,11 @@ main() {
         else
             echo "💡 Install external tools with --install-minifiers for better compression."
         fi
+    fi
+
+    if $copy_mode; then
+        echo ""
+        copy_to_clipboard "$output_file"
     fi
 
     if $compress_mode; then
