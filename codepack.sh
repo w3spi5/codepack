@@ -616,21 +616,39 @@ is_binary() {
         return 1
     fi
 
-    # Check if grep supports -I (ignore binary)
-    if grep --help 2>&1 | grep -q -- "-I"; then
-        if grep -I -q "" "$file" 2>/dev/null; then
-            return 1 # Not binary (text)
-        else
-            return 0 # Binary
-        fi
+    # Method 1: use grep -I (ignore binary)
+    # Returns 0 (success) if text file (matches empty string)
+    # Returns 1 (failure) if binary file (treated as empty content)
+    # Returns 2 (error) if -I is not supported
+    if grep -I -q "" "$file" 2>/dev/null; then
+        return 1 # Text
     else
-        # Fallback: check for null bytes in the first 1000 bytes
-        if head -c 1000 "$file" | grep -qP '\x00'; then
-            return 0 # Binary
-        else
-            return 1 # Not binary
+        local exit_code=$?
+        if [ $exit_code -eq 1 ]; then
+            return 0 # Binary (grep -I ran and found no match)
         fi
     fi
+
+    # Method 2: use Perl if available (reliable and portable)
+    if command -v perl >/dev/null 2>&1; then
+        if perl -e 'exit((-B $ARGV[0]) ? 0 : 1)' "$file" 2>/dev/null; then
+            return 0 # Binary
+        else
+            return 1 # Text
+        fi
+    fi
+
+    # Method 3: Check for null bytes (fallback)
+    # LC_ALL=C ensures byte-based processing
+    if LC_ALL=C grep -q '[^[:print:][:space:]]' <(head -c 1000 "$file") 2>/dev/null; then
+         # This is aggressive (detects any non-printable), maybe too aggressive?
+         # Better to check for null bytes specifically using tr
+         if head -c 1000 "$file" | tr -d '\0' | [ $(wc -c) -lt $(head -c 1000 "$file" | wc -c) ]; then
+             return 0 # Binary (null bytes detected)
+         fi
+    fi
+
+    return 1 # Assume text if uncertain
 }
 
 should_process_file() {
