@@ -622,10 +622,21 @@ generate_tree() {
     local excluded_dirs=()
     local excluded_files=()
 
-    while IFS= read -r -d '' path; do
+    # Use bash globs to list all files/dirs (except . and ..) sorted alphabetically
+    # faster than find + sort or ls in a recursive loop and portable (Bash 3.2+)
+    local saved_nullglob=$(shopt -p nullglob)
+    local saved_dotglob=$(shopt -p dotglob)
+    shopt -s nullglob dotglob
+
+    local entries=("$dir"/*)
+
+    eval "$saved_nullglob"
+    eval "$saved_dotglob"
+
+    for path in "${entries[@]}"; do
+        local name
+        name=$(basename "$path")
         if [[ -d "$path" ]]; then
-            local name
-            name=$(basename "$path")
             local skip_dir=0
             for exdir in "${exclude_dirs[@]}"; do
                 if [[ "$name" == "$exdir" ]]; then
@@ -635,13 +646,11 @@ generate_tree() {
                 fi
             done
             if [[ $skip_dir -eq 0 ]]; then dirs+=("$path"); fi
-        else
-            local filename
-            filename=$(basename "$path")
+        elif [[ -f "$path" ]]; then
             local exclude=0
-            if [[ "$path" == "$output_file" || "$filename" =~ ^codepack_.*\.txt$ ]]; then continue; fi
+            if [[ "$path" == "$output_file" || "$name" =~ ^codepack_.*\.txt$ ]]; then continue; fi
             for exclude_file in "${exclude_files[@]}"; do
-                if [[ "$filename" == "$exclude_file" ]]; then
+                if [[ "$name" == "$exclude_file" ]]; then
                     excluded_files+=("$path")
                     exclude=1
                     break
@@ -651,7 +660,7 @@ generate_tree() {
                 if should_process_file "$path"; then files+=("$path"); fi
             fi
         fi
-    done < <(find "$dir" -maxdepth 1 -mindepth 1 -print0 2>/dev/null | sort -z)
+    done
 
     local total_items=$((${#dirs[@]} + ${#excluded_dirs[@]} + ${#files[@]} + ${#excluded_files[@]}))
     local items_processed=0
