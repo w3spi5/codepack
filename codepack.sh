@@ -743,45 +743,44 @@ extract_files_content() {
 
         debug_log "Processing file $current_file/$total_files: $file" >&2
 
-        if ! should_exclude_dir "$file" && ! should_exclude_file "$file" && should_process_file "$file"; then
-            local filename
-            filename=$(basename "$file")
+        # Redundant checks removed - files are already filtered by list_files_to_process
+        local filename
+        filename=$(basename "$file")
 
-            debug_log "Reading content from: $filename" >&2
+        debug_log "Reading content from: $filename" >&2
 
-            # Read file content and clean invalid characters
-            local content=""
-            if [[ -r "$file" && -s "$file" ]]; then
-                content=$(cat "$file" 2>/dev/null | sed 's/�/ /g' 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
-            fi
+        # Read file content and clean invalid characters
+        local content=""
+        if [[ -r "$file" && -s "$file" ]]; then
+            content=$(cat "$file" 2>/dev/null | sed 's// /g' 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
+        fi
 
-            debug_log "Content length: ${#content}" >&2
+        debug_log "Content length: ${#content}" >&2
 
-            # Apply ultra-aggressive minification if enabled
-            if $minify_mode && [[ -n "$content" ]]; then
-                debug_log "Starting minification for: $filename" >&2
-                content=$(minify_content "$file" "$content" 2>/dev/null || echo "$content")
-                debug_log "Minification complete for: $filename" >&2
-            fi
+        # Apply ultra-aggressive minification if enabled
+        if $minify_mode && [[ -n "$content" ]]; then
+            debug_log "Starting minification for: $filename" >&2
+            content=$(minify_content "$file" "$content" 2>/dev/null || echo "$content")
+            debug_log "Minification complete for: $filename" >&2
+        fi
 
-            # Check if content is empty or only whitespace after processing
-            local cleaned_content=""
-            if [[ -n "$content" ]]; then
-                cleaned_content=$(echo "$content" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' 2>/dev/null | sed '/^[[:space:]]*$/d' 2>/dev/null)
-            fi
+        # Check if content is empty or only whitespace after processing
+        local cleaned_content=""
+        if [[ -n "$content" ]]; then
+            cleaned_content=$(echo "$content" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' 2>/dev/null | sed '/^[[:space:]]*$/d' 2>/dev/null)
+        fi
 
-            # Only write to output if file has actual content
-            if [[ -n "$cleaned_content" ]]; then
-                debug_log "Writing to output: $filename" >&2
-                {
-                    echo -e "\n+-------------------"
-                    echo "# $filename"
-                    echo -e "+--------------------\n"
-                    echo "$content"
-                    echo -e "\n"
-                } >> "$output_file" 2>/dev/null
-                processed_files=$((processed_files + 1))
-            fi
+        # Only write to output if file has actual content
+        if [[ -n "$cleaned_content" ]]; then
+            debug_log "Writing to output: $filename" >&2
+            {
+                echo -e "\n+-------------------"
+                echo "# $filename"
+                echo -e "+--------------------\n"
+                echo "$content"
+                echo -e "\n"
+            } >> "$output_file" 2>/dev/null
+            processed_files=$((processed_files + 1))
         fi
 
         show_progress "$current_file" "$total_files"
@@ -844,7 +843,9 @@ main() {
     echo ""
     echo "🗂️  Generation in progress, please wait ..."
 
-    total_files=$(count_files_to_process "$directory")
+    # Capture files list once to avoid double traversal
+    mapfile -t files < <(list_files_to_process "$directory")
+    total_files=${#files[@]}
     formatted_total=$(format_number "$total_files")
     echo "Found $formatted_total files to process"
     echo ""
@@ -885,7 +886,6 @@ main() {
         fi
     } > "$output_file"
 
-    mapfile -t files < <(list_files_to_process "$directory")
     extract_files_content "${files[@]}"
 
     if [ ! -f "$output_file" ]; then
