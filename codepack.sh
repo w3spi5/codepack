@@ -4,9 +4,16 @@
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 4.1
+# Version: 4.2
 # Dependencies: Optional external minifiers for maximum compression
 # ----------------------------------------------------------------------------
+
+# Ensure script runs with bash, not sh (POSIX shell doesn't support arrays)
+if [ -z "$BASH_VERSION" ]; then
+    echo "Error: This script requires bash. Please run with: bash $0 $*" >&2
+    echo "       Or make it executable: chmod +x $0 && ./$0 $*" >&2
+    exit 1
+fi
 
 # ====== CONFIGURATION ======
 DEFAULT_EXCLUDE_DIRS=(".git" "node_modules" "venv" "__pycache__" ".next" "dist" "build")
@@ -893,7 +900,7 @@ main() {
     check_minifiers
 
     echo ""
-    echo "🔧 codepack v4.1"
+    echo "🔧 codepack v4.2"
     echo "Automatically excluding directories: $(printf "'%s', " "${exclude_dirs[@]}" | sed 's/, $//')"
     echo "Automatically excluding files: $(printf "'%s', " "${exclude_files[@]}" | sed 's/, $//')"
 
