@@ -835,6 +835,12 @@ extract_files_content() {
 
         debug_log "Reading content from: $filename" >&2
 
+        if is_binary "$file"; then
+             echo "Skipping binary file: $filename" >&2
+             show_progress "$current_file" "$total_files"
+             continue
+        fi
+
         # Read file content and clean invalid characters
         local content=""
         if [[ -r "$file" && -s "$file" ]]; then
