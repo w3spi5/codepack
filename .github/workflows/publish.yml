@@ -1,32 +1,53 @@
-name: Publish & Test
+name: Test & Publish
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  release:
+    types: [published]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Make codepack.sh executable
-        run: chmod +x codepack.sh
+      - uses: actions/checkout@v4
+
+      - name: Make scripts executable
+        run: chmod +x codepack.sh test/*.sh
+
       - name: Run minimal test
         run: ./codepack.sh --minify-info
 
       - name: Run basic tests
         run: |
-          chmod +x test/test_basic.sh
           cd test
           ./test_basic.sh
+
+      - name: Run feature tests
+        run: |
+          cd test
+          ./test_features.sh
 
   publish:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - uses: actions/checkout@v3
-      - name: Publish to npm
-        run: echo "Publishing step here (add your npm publish command)"
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@w3spi5'
+
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
