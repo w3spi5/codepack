@@ -25,7 +25,10 @@
     "LICENSE",
     "README.md"
   ],
-  "repository": "git://github.com/w3spi5/codepack.git",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/w3spi5/codepack.git"
+  },
   "author": "w3spi5",
   "license": "MIT",
   "publishConfig": {
