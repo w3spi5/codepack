@@ -1,0 +1,3 @@
+## 2025-12-18 - [Bash Filtering Bottleneck & Subshell Overhead]
+**Learning:** Offloading file filtering logic from a Bash loop to `find` predicates drastically reduces overhead, especially when combined with removing unnecessary subshells (like `cat | sed | tr`). In this codebase, moving filtering to `find` and removing a broken `sed` command not only improved performance but also fixed a critical data loss bug where `sed` failure resulted in empty content.
+**Action:** When working with file processing scripts in Bash, always maximize the use of `find`'s native filtering capabilities before iterating in a loop, and audit pipelines for potential failure points that might fail silently with `2>/dev/null`.
