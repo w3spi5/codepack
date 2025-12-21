@@ -851,7 +851,9 @@ extract_files_content() {
         # Read file content and clean invalid characters
         local content=""
         if [[ -r "$file" && -s "$file" ]]; then
-            content=$(cat "$file" 2>/dev/null | sed 's// /g' 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
+            # Optimization: Use redirection < "$file" instead of cat to save a process fork
+            # Removed broken sed 's// /g' which caused empty output on some systems
+            content=$(tr -cd '\11\12\15\40-\176' < "$file" 2>/dev/null || echo "")
         fi
 
         debug_log "Content length: ${#content}" >&2
@@ -943,7 +945,12 @@ main() {
     echo "🗂️  Generation in progress, please wait ..."
 
     # Capture files list once to avoid double traversal
-    mapfile -t files < <(list_files_to_process "$directory")
+    # Using while loop instead of mapfile for Bash 3.2 compatibility (macOS)
+    files=()
+    while IFS= read -r file; do
+        files+=("$file")
+    done < <(list_files_to_process "$directory")
+
     total_files=${#files[@]}
     formatted_total=$(format_number "$total_files")
     echo "Found $formatted_total files to process"
