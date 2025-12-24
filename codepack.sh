@@ -851,7 +851,9 @@ extract_files_content() {
         # Read file content and clean invalid characters
         local content=""
         if [[ -r "$file" && -s "$file" ]]; then
-            content=$(cat "$file" 2>/dev/null | sed 's// /g' 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
+            # Optimization: Use direct redirection instead of cat|sed to reduce process forks
+            # and fix bug with invalid sed command
+            content=$(tr -cd '\11\12\15\40-\176' < "$file" 2>/dev/null || echo "")
         fi
 
         debug_log "Content length: ${#content}" >&2
