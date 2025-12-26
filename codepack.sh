@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------------
 # codepack - CLI tool to extract folder structure and file contents
 # Author: Ɛɔıs3 Solutions
-# GitHub: https://github.com/w3spi5
+# GitHub: https://github.com/w3spi5/codepack
 # License: MIT
 # Version: 4.2
 # Dependencies: Optional external minifiers for maximum compression
@@ -697,7 +697,9 @@ should_exclude_dir() {
     return 1
 }
 
-# ====== TREE GENERATION ======
+# ====== TREE GENERATION & COLLECTION ======
+FILES_TO_PROCESS=()
+
 generate_tree() {
     local dir="$1"
     local prefix="$2"
@@ -732,7 +734,9 @@ generate_tree() {
             if [[ $skip_dir -eq 0 ]]; then dirs+=("$path"); fi
         elif [[ -f "$path" ]]; then
             local exclude=0
+            # Skip output file and previous runs
             if [[ "$path" == "$output_file" || "$name" =~ ^codepack_.*\.txt$ ]]; then continue; fi
+
             for exclude_file in "${exclude_files[@]}"; do
                 if [[ "$name" == "$exclude_file" ]]; then
                     excluded_files+=("$path")
@@ -741,7 +745,11 @@ generate_tree() {
                 fi
             done
             if [[ $exclude -eq 0 ]]; then
-                if should_process_file "$path"; then files+=("$path"); fi
+                if should_process_file "$path"; then
+                    files+=("$path")
+                    # Collect file for processing
+                    FILES_TO_PROCESS+=("$path")
+                fi
             fi
         fi
     done
@@ -797,33 +805,6 @@ generate_tree() {
     done
 }
 
-# ====== FILE LISTING & COUNT ======
-list_files_to_process() {
-    local dir="$1"
-    local find_cmd="find \"$dir\""
-    for exclude_dir in "${exclude_dirs[@]}"; do
-        find_cmd+=" -not -path \"*/$exclude_dir/*\""
-    done
-    find_cmd+=" -type f -print0"
-
-    while IFS= read -r -d '' file; do
-        local filename
-        filename=$(basename "$file")
-        local exclude=0
-        for exclude_file in "${exclude_files[@]}"; do
-            if [[ "$filename" == "$exclude_file" ]]; then exclude=1; break; fi
-        done
-        if [[ "$filename" =~ ^codepack_.*\.txt$ ]]; then exclude=1; fi
-        if [[ $exclude -eq 0 ]] && should_process_file "$file"; then
-            echo "$file"
-        fi
-    done < <(eval "$find_cmd" 2>/dev/null)
-}
-
-count_files_to_process() {
-    list_files_to_process "$1" | wc -l
-}
-
 # ====== EXTRACTION ======
 extract_files_content() {
     local files=("$@")
@@ -836,7 +817,7 @@ extract_files_content() {
 
         debug_log "Processing file $current_file/$total_files: $file" >&2
 
-        # Redundant checks removed - files are already filtered by list_files_to_process
+        # Redundant checks removed - files are already filtered by generate_tree
         local filename
         filename=$(basename "$file")
 
@@ -942,19 +923,7 @@ main() {
     echo ""
     echo "🗂️  Generation in progress, please wait ..."
 
-    # Capture files list once to avoid double traversal
-    mapfile -t files < <(list_files_to_process "$directory")
-    total_files=${#files[@]}
-    formatted_total=$(format_number "$total_files")
-    echo "Found $formatted_total files to process"
-    echo ""
-
-    if [ "$total_files" -eq 0 ]; then
-        echo "No files to process in this directory (after exclusions)."
-        exit 0
-    fi
-
-    # Generate header
+    # Generate tree and collect files simultaneously
     {
         echo "+---------------------------------------------+"
         echo "          --- DIRECTORY STRUCTURE ---          "
@@ -985,7 +954,19 @@ main() {
         fi
     } > "$output_file"
 
-    extract_files_content "${files[@]}"
+    # Use collected files
+    total_files=${#FILES_TO_PROCESS[@]}
+    formatted_total=$(format_number "$total_files")
+    echo "Found $formatted_total files to process"
+    echo ""
+
+    if [ "$total_files" -eq 0 ]; then
+        echo "No files to process in this directory (after exclusions)."
+        rm -f "$output_file"
+        exit 0
+    fi
+
+    extract_files_content "${FILES_TO_PROCESS[@]}"
 
     if [ ! -f "$output_file" ]; then
         echo "Error: Output file was not generated."
