@@ -661,20 +661,28 @@ is_binary() {
 should_process_file() {
     local file="$1"
     local extension="${file##*.}"
-    if [ "$extension" = "$file" ] && $include_mode; then
-        return 1
+
+    # If file has no extension
+    if [ "$extension" = "$file" ]; then
+        if $include_mode; then return 1; fi
+        return 0
     fi
+
+    if $include_mode; then
+        for ext in "${include_extensions[@]}"; do
+             local clean_ext="${ext#.}"
+             if [ "$extension" = "$clean_ext" ]; then return 0; fi
+        done
+        return 1 # Not found in include list
+    fi
+
     if $exclude_mode; then
         for ext in "${exclude_extensions[@]}"; do
-            clean_ext="${ext#.}"
+            local clean_ext="${ext#.}"
             if [ "$extension" = "$clean_ext" ]; then return 1; fi
         done
     fi
-    if $exclude_mode; then
-        for ext in "${exclude_extensions[@]}"; do
-            if [ "$extension" = "$ext" ]; then return 1; fi
-        done
-    fi
+
     return 0
 }
 
@@ -801,23 +809,50 @@ generate_tree() {
 list_files_to_process() {
     local dir="$1"
     local find_cmd="find \"$dir\""
+
+    # Exclude directories
     for exclude_dir in "${exclude_dirs[@]}"; do
         find_cmd+=" -not -path \"*/$exclude_dir/*\""
     done
-    find_cmd+=" -type f -print0"
 
-    while IFS= read -r -d '' file; do
-        local filename
-        filename=$(basename "$file")
-        local exclude=0
-        for exclude_file in "${exclude_files[@]}"; do
-            if [[ "$filename" == "$exclude_file" ]]; then exclude=1; break; fi
+    # Base find command: type file
+    find_cmd+=" -type f"
+
+    # Exclude filenames
+    for exclude_file in "${exclude_files[@]}"; do
+        find_cmd+=" -not -name \"$exclude_file\""
+    done
+
+    # Exclude output files
+    find_cmd+=" -not -name \"codepack_*.txt\""
+
+    # Handle extension filtering
+    if $include_mode; then
+        find_cmd+=" \( "
+        local first=true
+        for ext in "${include_extensions[@]}"; do
+             # Handle extension with or without dot
+             local clean_ext="${ext#.}"
+             if $first; then
+                 find_cmd+=" -name \"*.$clean_ext\""
+                 first=false
+             else
+                 find_cmd+=" -o -name \"*.$clean_ext\""
+             fi
         done
-        if [[ "$filename" =~ ^codepack_.*\.txt$ ]]; then exclude=1; fi
-        if [[ $exclude -eq 0 ]] && should_process_file "$file"; then
-            echo "$file"
-        fi
-    done < <(eval "$find_cmd" 2>/dev/null)
+        # Also include files with exact name matching extension if that was the logic (usually not needed for include mode on extensions)
+        find_cmd+=" \)"
+    elif $exclude_mode; then
+        for ext in "${exclude_extensions[@]}"; do
+            local clean_ext="${ext#.}"
+            find_cmd+=" -not -name \"*.$clean_ext\""
+        done
+    fi
+
+    find_cmd+=" -print0"
+
+    # Execute find directly
+    eval "$find_cmd" 2>/dev/null
 }
 
 count_files_to_process() {
@@ -851,8 +886,7 @@ extract_files_content() {
         # Read file content and clean invalid characters
         local content=""
         if [[ -r "$file" && -s "$file" ]]; then
-            # Optimization: Use input redirection and avoid cat/sed to minimize forks
-            content=$(tr -cd '\11\12\15\40-\176' < "$file" 2>/dev/null || echo "")
+            content=$(cat "$file" 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
         fi
 
         debug_log "Content length: ${#content}" >&2
@@ -944,7 +978,12 @@ main() {
     echo "🗂️  Generation in progress, please wait ..."
 
     # Capture files list once to avoid double traversal
-    mapfile -t files < <(list_files_to_process "$directory")
+    # Using while loop for Bash 3.2 compatibility (mapfile is Bash 4+)
+    local files=()
+    while IFS= read -r -d '' file; do
+        files+=("$file")
+    done < <(list_files_to_process "$directory")
+
     total_files=${#files[@]}
     formatted_total=$(format_number "$total_files")
     echo "Found $formatted_total files to process"
