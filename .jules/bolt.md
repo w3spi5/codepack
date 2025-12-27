@@ -1,3 +1,7 @@
+This is a placeholder for .jules/bolt.md
+## 2025-12-22 - [Buggy sed pipeline]
+**Learning:** `sed 's// /g'` (empty regex) causes exit code 1 on some platforms and silent data loss in pipes.
+**Action:** Always verify `sed` syntax and prefer `tr` for simple character filtering to avoid process overhead and portability issues.
 ## 2025-12-21 - [Bash Pipeline Optimization]
 **Learning:** Avoid useless pipes like `cat | sed`. Using input redirection `tr < file` saved 2 process forks per file and fixed a data loss bug caused by `sed 's// /g'`.
 **Action:** Always prefer redirection over `cat` for single file inputs.
