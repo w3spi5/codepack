@@ -1,3 +1,6 @@
+## 2025-12-21 - [Bash Pipeline Optimization]
+**Learning:** Avoid useless pipes like `cat | sed`. Using input redirection `tr < file` saved 2 process forks per file and fixed a data loss bug caused by `sed 's// /g'`.
+**Action:** Always prefer redirection over `cat` for single file inputs.
 ## 2025-12-20 - Unexpected sed behavior in pipes
 **Learning:** `sed 's// /g'` without a prior regex fails (exit code 1) on some systems/versions, and when used in a pipe like `cat | sed | tr`, it can cause the pipe to effectively transmit nothing if the failure happens early or in a specific way, leading to silent data loss.
 **Action:** Always validate `sed` commands in isolation. Prefer strict filtering (like `tr -cd`) over ambiguous replacement when sanitizing data. Avoid unnecessary pipes to prevent masking errors.
