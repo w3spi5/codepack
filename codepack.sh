@@ -886,7 +886,8 @@ extract_files_content() {
         # Read file content and clean invalid characters
         local content=""
         if [[ -r "$file" && -s "$file" ]]; then
-            content=$(cat "$file" 2>/dev/null | tr -cd '\11\12\15\40-\176' 2>/dev/null || echo "")
+            # Optimization: Use redirection < instead of cat | tr to save process forks
+            content=$(tr -cd '\11\12\15\40-\176' < "$file" 2>/dev/null || echo "")
         fi
 
         debug_log "Content length: ${#content}" >&2
@@ -898,14 +899,9 @@ extract_files_content() {
             debug_log "Minification complete for: $filename" >&2
         fi
 
-        # Check if content is empty or only whitespace after processing
-        local cleaned_content=""
-        if [[ -n "$content" ]]; then
-            cleaned_content=$(echo "$content" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' 2>/dev/null | sed '/^[[:space:]]*$/d' 2>/dev/null)
-        fi
-
-        # Only write to output if file has actual content
-        if [[ -n "$cleaned_content" ]]; then
+        # Check if content has at least one non-whitespace character
+        # Optimization: Use bash regex instead of creating 3 sed processes + subshell
+        if [[ "$content" =~ [^[:space:]] ]]; then
             debug_log "Writing to output: $filename" >&2
             {
                 echo -e "\n+-------------------"
