@@ -454,7 +454,7 @@ compress_output_file() {
 get_file_type() {
     local file="$1"
     local filename
-    filename=$(basename "$file")
+    filename="${file##*/}"
     local extension="${file##*.}"
     extension="${extension,,}"
 
@@ -689,7 +689,7 @@ should_process_file() {
 should_exclude_file() {
     local file="$1"
     local filename
-    filename=$(basename "$file")
+    filename="${file##*/}"
     for exclude_file in "${exclude_files[@]}"; do
         if [[ "$filename" == "$exclude_file" ]]; then return 0; fi
     done
@@ -716,18 +716,13 @@ generate_tree() {
 
     # Use bash globs to list all files/dirs (except . and ..) sorted alphabetically
     # faster than find + sort or ls in a recursive loop and portable (Bash 3.2+)
-    local saved_nullglob=$(shopt -p nullglob)
-    local saved_dotglob=$(shopt -p dotglob)
-    shopt -s nullglob dotglob
+    # Optimization: shopt settings are handled by the caller to avoid subshell overhead in recursion
 
     local entries=("$dir"/*)
 
-    eval "$saved_nullglob"
-    eval "$saved_dotglob"
-
     for path in "${entries[@]}"; do
         local name
-        name=$(basename "$path")
+        name="${path##*/}"
         if [[ -d "$path" ]]; then
             local skip_dir=0
             for exdir in "${exclude_dirs[@]}"; do
@@ -759,7 +754,7 @@ generate_tree() {
 
     for path in "${dirs[@]}"; do
         local name
-        name=$(basename "$path")
+        name="${path##*/}"
         items_processed=$((items_processed + 1))
         local new_prefix="$prefix│   "
         if [ $items_processed -eq $total_items ]; then
@@ -773,7 +768,7 @@ generate_tree() {
 
     for path in "${excluded_dirs[@]}"; do
         local name
-        name=$(basename "$path")
+        name="${path##*/}"
         items_processed=$((items_processed + 1))
         if [ $items_processed -eq $total_items ]; then
             echo "${prefix}└── $name/ (excluded)"
@@ -784,7 +779,7 @@ generate_tree() {
 
     for path in "${files[@]}"; do
         local name
-        name=$(basename "$path")
+        name="${path##*/}"
         items_processed=$((items_processed + 1))
         if [ $items_processed -eq $total_items ]; then
             echo "${prefix}└── $name"
@@ -795,7 +790,7 @@ generate_tree() {
 
     for path in "${excluded_files[@]}"; do
         local name
-        name=$(basename "$path")
+        name="${path##*/}"
         items_processed=$((items_processed + 1))
         if [ $items_processed -eq $total_items ]; then
             echo "${prefix}└── $name (excluded)"
@@ -873,7 +868,7 @@ extract_files_content() {
 
         # Redundant checks removed - files are already filtered by list_files_to_process
         local filename
-        filename=$(basename "$file")
+        filename="${file##*/}"
 
         debug_log "Reading content from: $filename" >&2
 
@@ -1001,7 +996,17 @@ main() {
         echo "+---------------------------------------------+"
         echo
         echo "$(basename "$directory")/"
+
+        # Enable globs for tree generation (optimization to avoid subshells in recursion)
+        local saved_nullglob=$(shopt -p nullglob)
+        local saved_dotglob=$(shopt -p dotglob)
+        shopt -s nullglob dotglob
+
         generate_tree "$directory" ""
+
+        eval "$saved_nullglob"
+        eval "$saved_dotglob"
+
         echo
         echo "+---------------------------------------------+"
         echo "             --- FILES CONTENT ---             "
