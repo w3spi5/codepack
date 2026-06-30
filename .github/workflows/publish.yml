@@ -43,11 +43,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@w3spi5'
 
       - name: Publish to GitHub Packages
         run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Use the automatically-provided GITHUB_TOKEN (with packages: write
+          # permission granted above) instead of a separate NPM_TOKEN secret.
+          # The previous NPM_TOKEN was unauthenticated (npm error 401), which
+          # blocked every release publish after v4.2.
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
