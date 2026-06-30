@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.1] - 2026-06-30
+
+### Fixed
+- **Critical regression**: file contents were no longer extracted — the output
+  contained only the directory tree and every file was wrongly reported as
+  "empty" (`Processed 0 files`). The content extraction pipeline now reads and
+  writes file contents correctly again.
+- `should_process_file()`: extension matching now strips a leading dot
+  (e.g. `--include .py` and `--include py` behave identically) and files without
+  an extension are handled correctly in both include and exclude modes.
+- `list_files_to_process()`: rebuilt around a single `find` invocation with
+  proper directory, filename and extension filtering, emitting NUL-delimited
+  paths so filenames with spaces are handled safely.
+- Removed a stray control character from the content-reading `sed` pipeline that
+  could corrupt or blank out file contents.
+- Replaced `mapfile` with a Bash 3.2-compatible read loop so the script runs on
+  macOS's default Bash.
+
 ## [4.2] - 2025-12-18
 
 ### Added
