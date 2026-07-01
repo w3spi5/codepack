@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2026-07-01
+
+### Changed
+- Version bumped to 5.0.0 to mark the first fully working, publishable release
+  after the broken v4.2 line. No breaking changes to the CLI: all flags and
+  output formats are unchanged — existing commands keep working as-is.
+
+### Note
+- This release consolidates the content-extraction and GitHub Packages
+  publishing fixes introduced in 4.2.1 (see below) under a clean 5.x baseline.
+
 ## [4.2.1] - 2026-06-30
 
 ### Fixed

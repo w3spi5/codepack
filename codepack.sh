@@ -4,7 +4,7 @@
 # Author: Ɛɔıs3 Solutions
 # GitHub: https://github.com/w3spi5
 # License: MIT
-# Version: 4.2.1
+# Version: 5.0.0
 # Dependencies: Optional external minifiers for maximum compression
 # ----------------------------------------------------------------------------
 
@@ -930,7 +930,7 @@ main() {
     check_minifiers
 
     echo ""
-    echo "🔧 codepack v4.2.1"
+    echo "🔧 codepack v5.0.0"
     echo "Automatically excluding directories: $(printf "'%s', " "${exclude_dirs[@]}" | sed 's/, $//')"
     echo "Automatically excluding files: $(printf "'%s', " "${exclude_files[@]}" | sed 's/, $//')"
 
