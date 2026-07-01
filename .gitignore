@@ -44,3 +44,6 @@ codepack_*.txt.gz
 /test/*.txt
 /test/*.txt.gz
 /exposed/*
+
+.claude
+.serena
